@@ -1,0 +1,6 @@
+interface Env {
+  CONTENTFUL_SPACE_ID: string;
+  CONTENTFUL_ACCESS_TOKEN: string;
+  CONTENTFUL_PREVIEW_TOKEN?: string;
+  GA_MEASUREMENT_ID?: string;
+}

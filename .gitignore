@@ -1,0 +1,10 @@
+node_modules
+
+/.cache
+/build
+
+# Secrets — never commit
+.env
+.env.*
+.dev.vars
+.wrangler
