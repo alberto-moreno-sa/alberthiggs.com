@@ -8,13 +8,6 @@ export default function Footer() {
             <span>Alberto Moreno</span>
           </div>
 
-          <div className="flex items-center gap-2 text-text-muted text-xs">
-            <span>Crafted with</span>
-            <span className="px-2 py-0.5 rounded bg-accent/10 border border-accent/20 font-mono text-accent">Remix</span>
-            <span>&</span>
-            <span className="px-2 py-0.5 rounded bg-accent/10 border border-accent/20 font-mono text-accent">Tailwind CSS</span>
-          </div>
-
           <div className="text-text-muted text-xs font-mono">
             &copy; {new Date().getFullYear()} Alberto Moreno
           </div>
