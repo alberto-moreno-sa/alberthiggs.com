@@ -126,7 +126,14 @@ function TacoVisual({ progress }: { progress: number }) {
         {/* Onion pieces */}
         <ellipse cx="110" cy="225" rx="8" ry="3" fill="#e8e0d0" opacity="0.7" />
         <ellipse cx="175" cy="222" rx="7" ry="3" fill="#e8e0d0" opacity="0.6" />
-        <ellipse cx="140" cy="230" rx="6" ry="2.5" fill="#e8e0d0" opacity="0.5" />
+        <ellipse
+          cx="140"
+          cy="230"
+          rx="6"
+          ry="2.5"
+          fill="#e8e0d0"
+          opacity="0.5"
+        />
       </g>
 
       {/* Salsa Roja — red drizzle */}
@@ -191,14 +198,10 @@ function TacoVisual({ progress }: { progress: number }) {
   );
 }
 
-function IngredientText({
-  progress,
-}: {
-  progress: number;
-}) {
+function IngredientText({ progress }: { progress: number }) {
   const activeIndex = TACO_LAYERS.reduce(
     (acc, layer, i) => (progress >= layer.threshold ? i : acc),
-    0
+    0,
   );
 
   return (
@@ -234,9 +237,7 @@ function ProgressDots({ progress }: { progress: number }) {
         <div
           key={layer.id}
           className={`w-2 h-2 rounded-full transition-all duration-300 ${
-            progress >= layer.threshold
-              ? "bg-accent scale-125"
-              : "bg-border"
+            progress >= layer.threshold ? "bg-accent scale-125" : "bg-border"
           }`}
         />
       ))}

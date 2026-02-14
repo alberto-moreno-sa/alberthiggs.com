@@ -40,41 +40,77 @@ body {
 }
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--color-bg); }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-accent-dim); }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-dim);
+}
 
 /* ── Keyframe Animations ── */
 @keyframes scroll-indicator {
-  0% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(8px); }
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes preloader-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes preloader-fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; visibility: hidden; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 /* ── Animation Utilities ── */
-.animate-scroll-indicator { animation: scroll-indicator 1.5s ease-in-out infinite; }
-.animate-fade-in-up { animation: fade-in-up 0.6s ease-out forwards; }
+.animate-scroll-indicator {
+  animation: scroll-indicator 1.5s ease-in-out infinite;
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
 
 /* ── Scroll Animation ── */
 .scroll-hidden {
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  transition:
+    opacity 0.7s ease-out,
+    transform 0.7s ease-out;
 }
 .scroll-visible {
   opacity: 1;
@@ -98,7 +134,11 @@ body {
 
 /* ── Dot Grid Background ── */
 .dot-grid {
-  background-image: radial-gradient(circle, rgba(102, 217, 237, 0.03) 1px, transparent 1px);
+  background-image: radial-gradient(
+    circle,
+    rgba(102, 217, 237, 0.03) 1px,
+    transparent 1px
+  );
   background-size: 24px 24px;
 }
 
@@ -107,7 +147,7 @@ body {
   position: relative;
 }
 .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -124,8 +164,12 @@ body {
 }
 
 /* ── Expand/Collapse Chevron ── */
-.expand-chevron { transition: transform 0.3s ease; }
-.expand-chevron-open { transform: rotate(180deg); }
+.expand-chevron {
+  transition: transform 0.3s ease;
+}
+.expand-chevron-open {
+  transform: rotate(180deg);
+}
 
 /* ── Preloader ── */
 .preloader-spin {
@@ -140,8 +184,13 @@ body {
 
 /* ── Taco Builder ── */
 @keyframes taco-glow {
-  0%, 100% { filter: drop-shadow(0 0 0px transparent); }
-  50% { filter: drop-shadow(0 0 12px var(--color-accent-glow)); }
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0px transparent);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px var(--color-accent-glow));
+  }
 }
 .taco-complete {
   animation: taco-glow 3s ease-in-out infinite;
@@ -149,7 +198,9 @@ body {
 
 /* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

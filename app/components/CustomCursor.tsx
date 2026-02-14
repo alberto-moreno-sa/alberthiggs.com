@@ -41,7 +41,7 @@ export default function CustomCursor() {
       const target = e.target as HTMLElement;
       if (
         target.closest(
-          'a, button, [role="button"], input, textarea, select, label'
+          'a, button, [role="button"], input, textarea, select, label',
         )
       ) {
         setIsHovering(true);
@@ -53,7 +53,7 @@ export default function CustomCursor() {
       if (
         !target ||
         !target.closest(
-          'a, button, [role="button"], input, textarea, select, label'
+          'a, button, [role="button"], input, textarea, select, label',
         )
       ) {
         setIsHovering(false);
@@ -81,11 +81,11 @@ export default function CustomCursor() {
       document.removeEventListener("mouseout", handleMouseOut);
       document.documentElement.removeEventListener(
         "mouseleave",
-        handleMouseLeave
+        handleMouseLeave,
       );
       document.documentElement.removeEventListener(
         "mouseenter",
-        handleMouseEnter
+        handleMouseEnter,
       );
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };

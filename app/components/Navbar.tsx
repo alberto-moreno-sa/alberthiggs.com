@@ -11,7 +11,7 @@ const navLinks = [
   { label: "Contact", href: "#contact", num: "07" },
 ];
 
-export default function Navbar({ resumeUrl }: { resumeUrl?: string }) {
+export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -74,17 +74,15 @@ export default function Navbar({ resumeUrl }: { resumeUrl?: string }) {
               </a>
             );
           })}
-          {resumeUrl && (
-            <a
-              href={resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackResumeDownload()}
-              className="ml-3 border border-accent/30 text-accent text-sm font-mono rounded-lg px-4 py-1.5 hover:bg-accent/10 transition-all duration-200"
-            >
-              Resume
-            </a>
-          )}
+          <a
+            href="/resume"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackResumeDownload()}
+            className="ml-3 border border-accent/30 text-accent text-sm font-mono rounded-lg px-4 py-1.5 hover:bg-accent/10 transition-all duration-200"
+          >
+            Resume
+          </a>
         </div>
 
         {/* Mobile hamburger */}
@@ -141,20 +139,18 @@ export default function Navbar({ resumeUrl }: { resumeUrl?: string }) {
               </a>
             );
           })}
-          {resumeUrl && (
-            <a
-              href={resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => {
-                setMobileOpen(false);
-                trackResumeDownload();
-              }}
-              className="px-4 py-3 text-sm font-mono text-accent border border-accent/30 rounded-lg text-center hover:bg-accent/10 transition-all"
-            >
-              Download Resume
-            </a>
-          )}
+          <a
+            href="/resume"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              setMobileOpen(false);
+              trackResumeDownload();
+            }}
+            className="px-4 py-3 text-sm font-mono text-accent border border-accent/30 rounded-lg text-center hover:bg-accent/10 transition-all"
+          >
+            Download Resume
+          </a>
         </div>
       </div>
     </nav>

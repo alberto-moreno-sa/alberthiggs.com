@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 export function useCountUp(
   target: number,
   isActive: boolean,
-  options?: { duration?: number }
+  options?: { duration?: number },
 ): number {
   const duration = options?.duration ?? 2000;
   const [value, setValue] = useState(0);
