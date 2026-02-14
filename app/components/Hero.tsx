@@ -1,5 +1,5 @@
 import type { PersonalInfo } from "~/lib/contentful";
-import { trackCtaClick } from "~/lib/analytics";
+import { trackCtaClick, trackResumeDownload } from "~/lib/analytics";
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import { useCountUp } from "~/hooks/useCountUp";
 
@@ -33,8 +33,10 @@ function AnimatedStat({
 
 export default function Hero({
   personalInfo,
+  resumeUrl,
 }: {
   personalInfo: PersonalInfo;
+  resumeUrl?: string;
 }) {
   const [firstName, ...rest] = personalInfo.name.split(" ");
   const lastName = rest.join(" ");
@@ -171,6 +173,17 @@ export default function Hero({
             >
               Get in Touch
             </a>
+            {resumeUrl && (
+              <a
+                href={resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackResumeDownload()}
+                className="px-8 py-3.5 border border-border text-text-secondary font-mono text-sm rounded-lg hover:border-accent hover:text-accent transition-all duration-300"
+              >
+                Download Resume
+              </a>
+            )}
           </div>
         </div>
 

@@ -74,15 +74,17 @@ export default function Navbar({ resumeUrl }: { resumeUrl?: string }) {
               </a>
             );
           })}
-          <a
-            href={resumeUrl || "/Alberto_Moreno-Senior_Software_Engineer_IV.pdf"}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackResumeDownload()}
-            className="ml-3 border border-accent/30 text-accent text-sm font-mono rounded-lg px-4 py-1.5 hover:bg-accent/10 transition-all duration-200"
-          >
-            Resume
-          </a>
+          {resumeUrl && (
+            <a
+              href={resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackResumeDownload()}
+              className="ml-3 border border-accent/30 text-accent text-sm font-mono rounded-lg px-4 py-1.5 hover:bg-accent/10 transition-all duration-200"
+            >
+              Resume
+            </a>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -92,8 +94,8 @@ export default function Navbar({ resumeUrl }: { resumeUrl?: string }) {
           aria-label="Toggle menu"
         >
           <span
-            className={`w-5 h-0.5 bg-text-primary transition-all duration-300 ${
-              mobileOpen ? "rotate-45 translate-y-2" : ""
+            className={`w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center ${
+              mobileOpen ? "rotate-45 translate-y-[4px]" : ""
             }`}
           />
           <span
@@ -102,8 +104,8 @@ export default function Navbar({ resumeUrl }: { resumeUrl?: string }) {
             }`}
           />
           <span
-            className={`w-5 h-0.5 bg-text-primary transition-all duration-300 ${
-              mobileOpen ? "-rotate-45 -translate-y-2" : ""
+            className={`w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center ${
+              mobileOpen ? "-rotate-45 -translate-y-[4px]" : ""
             }`}
           />
         </button>
@@ -139,15 +141,20 @@ export default function Navbar({ resumeUrl }: { resumeUrl?: string }) {
               </a>
             );
           })}
-          <a
-            href={resumeUrl || "/Alberto_Moreno-Senior_Software_Engineer_IV.pdf"}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackResumeDownload()}
-            className="px-4 py-3 text-sm font-mono text-accent"
-          >
-            Resume
-          </a>
+          {resumeUrl && (
+            <a
+              href={resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                setMobileOpen(false);
+                trackResumeDownload();
+              }}
+              className="px-4 py-3 text-sm font-mono text-accent border border-accent/30 rounded-lg text-center hover:bg-accent/10 transition-all"
+            >
+              Download Resume
+            </a>
+          )}
         </div>
       </div>
     </nav>
