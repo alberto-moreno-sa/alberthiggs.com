@@ -7,9 +7,7 @@ export default function Preloader() {
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
-    const minTimer = new Promise<void>((resolve) =>
-      setTimeout(resolve, 1500)
-    );
+    const minTimer = new Promise<void>((resolve) => setTimeout(resolve, 1500));
 
     const loadPromise = new Promise<void>((resolve) => {
       if (document.readyState === "complete") {

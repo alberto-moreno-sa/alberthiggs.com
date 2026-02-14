@@ -18,7 +18,7 @@ function setSecurityHeaders(headers: Headers) {
   // Restrict browser features not used by the site
   headers.set(
     "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=(), payment=()"
+    "camera=(), microphone=(), geolocation=(), payment=()",
   );
 
   // Content Security Policy
@@ -34,13 +34,13 @@ function setSecurityHeaders(headers: Headers) {
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
-    ].join("; ")
+    ].join("; "),
   );
 
   // HSTS — enforce HTTPS (1 year, include subdomains)
   headers.set(
     "Strict-Transport-Security",
-    "max-age=31536000; includeSubDomains; preload"
+    "max-age=31536000; includeSubDomains; preload",
   );
 }
 
@@ -49,7 +49,8 @@ export default async function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   remixContext: EntryContext,
-  _loadContext: AppLoadContext
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _loadContext: AppLoadContext,
 ) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), ABORT_DELAY);
@@ -68,7 +69,7 @@ export default async function handleRequest(
         }
         responseStatusCode = 500;
       },
-    }
+    },
   );
 
   // Clear timeout so it doesn't fire after the stream is already closed

@@ -1,5 +1,5 @@
 import type { PersonalInfo } from "~/lib/contentful";
-import { trackCtaClick, trackResumeDownload } from "~/lib/analytics";
+import { trackCtaClick } from "~/lib/analytics";
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import { useCountUp } from "~/hooks/useCountUp";
 
@@ -31,13 +31,7 @@ function AnimatedStat({
   );
 }
 
-export default function Hero({
-  personalInfo,
-  resumeUrl,
-}: {
-  personalInfo: PersonalInfo;
-  resumeUrl?: string;
-}) {
+export default function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
   const [firstName, ...rest] = personalInfo.name.split(" ");
   const lastName = rest.join(" ");
   const { ref: statsRef, isVisible: statsVisible } = useScrollAnimation(0.3);
@@ -119,10 +113,7 @@ export default function Hero({
         </div>
 
         {/* Name */}
-        <div
-          className="animate-fade-in-up"
-          style={{ animationDelay: "0.15s" }}
-        >
+        <div className="animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
           <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight leading-[0.9] font-mono mt-4">
             {firstName}
             <br />
@@ -173,17 +164,14 @@ export default function Hero({
             >
               Get in Touch
             </a>
-            {resumeUrl && (
-              <a
-                href={resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackResumeDownload()}
-                className="px-8 py-3.5 border border-border text-text-secondary font-mono text-sm rounded-lg hover:border-accent hover:text-accent transition-all duration-300"
-              >
-                Download Resume
-              </a>
-            )}
+            <a
+              href="/resume"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-3.5 border border-border text-text-secondary font-mono text-sm rounded-lg hover:border-accent hover:text-accent transition-all duration-300"
+            >
+              Download Resume
+            </a>
           </div>
         </div>
 
@@ -197,7 +185,10 @@ export default function Hero({
             className="mt-20 flex items-center justify-center gap-8 sm:gap-16"
           >
             {personalInfo.heroStats.map((stat, index) => (
-              <div key={stat.label} className="flex items-center gap-8 sm:gap-16">
+              <div
+                key={stat.label}
+                className="flex items-center gap-8 sm:gap-16"
+              >
                 {index > 0 && (
                   <div className="w-px h-10 bg-border -ml-8 sm:-ml-16" />
                 )}

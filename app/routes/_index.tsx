@@ -19,7 +19,7 @@ export function loader({ context }: LoaderFunctionArgs) {
   const env = context.cloudflare.env as Env;
   const client = new ContentfulClient(
     env.CONTENTFUL_SPACE_ID,
-    env.CONTENTFUL_ACCESS_TOKEN
+    env.CONTENTFUL_ACCESS_TOKEN,
   );
 
   return defer({
@@ -48,17 +48,13 @@ export default function Index() {
       <Preloader />
       <CustomCursor />
       <div className="relative">
-        <Suspense fallback={<Navbar />}>
-          <Await resolve={personal}>
-            {(data) => <Navbar resumeUrl={data.resumeUrl} />}
-          </Await>
-        </Suspense>
+        <Navbar />
         <main>
           <Suspense fallback={<SectionSkeleton />}>
             <Await resolve={personal}>
               {(data) => (
                 <>
-                  <Hero personalInfo={data} resumeUrl={data.resumeUrl} />
+                  <Hero personalInfo={data} />
                   <About personalInfo={data} />
                 </>
               )}

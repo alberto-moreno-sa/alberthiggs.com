@@ -76,7 +76,9 @@ function ExperienceCard({
             )}
 
             {/* Expand indicator */}
-            <div className={`${isExpanded ? "mt-4" : "mt-3"} flex items-center gap-2 text-accent/70 text-xs`}>
+            <div
+              className={`${isExpanded ? "mt-4" : "mt-3"} flex items-center gap-2 text-accent/70 text-xs`}
+            >
               <svg
                 className={`expand-chevron w-4 h-4 ${
                   isExpanded ? "expand-chevron-open" : ""

@@ -43,7 +43,7 @@ export function useExpandable(defaultExpanded = false): ExpandableReturn {
         toggle();
       }
     },
-    [toggle]
+    [toggle],
   );
 
   return {
