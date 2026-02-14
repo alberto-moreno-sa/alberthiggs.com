@@ -110,11 +110,37 @@ The site will be available at `http://localhost:5173`.
 
 ## Deployment
 
-The site deploys to **Cloudflare Pages**. The Wrangler config (`wrangler.toml`) points the build output to `./build/client`.
+Production deploys are triggered automatically when a **GitHub Release** is published. The workflow (`.github/workflows/deploy.yml`) builds the app and deploys to Cloudflare Pages.
+
+### How to deploy
 
 ```bash
-# Build and deploy
-npm run build && npm run deploy
+# Create a tag and push it
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
-Make sure the environment variables (`CONTENTFUL_SPACE_ID`, `CONTENTFUL_ACCESS_TOKEN`, `GA_MEASUREMENT_ID`) are set in your Cloudflare Pages project settings.
+Then go to **GitHub → Releases → Draft a new release**, select the tag, and click **Publish release**. The deploy workflow will run automatically.
+
+You can also create the release directly from the CLI:
+
+```bash
+gh release create v1.0.0 --generate-notes
+```
+
+### Required secrets
+
+Set these in your repo under **Settings → Secrets and variables → Actions**:
+
+| Secret                   | Description                          |
+| ------------------------ | ------------------------------------ |
+| `CLOUDFLARE_API_TOKEN`   | Cloudflare API token with Pages edit |
+| `CLOUDFLARE_ACCOUNT_ID`  | Your Cloudflare account ID           |
+
+Set these in your **Cloudflare Pages** project environment variables:
+
+| Variable                   | Description                |
+| -------------------------- | -------------------------- |
+| `CONTENTFUL_SPACE_ID`      | Contentful space ID        |
+| `CONTENTFUL_ACCESS_TOKEN`  | Contentful delivery token  |
+| `GA_MEASUREMENT_ID`        | Google Analytics 4 ID      |
