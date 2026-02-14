@@ -3,7 +3,6 @@ import { defer, type LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { useLoaderData, Await } from "@remix-run/react";
 import { ContentfulClient } from "~/lib/contentful";
 import Preloader from "~/components/Preloader";
-import CustomCursor from "~/components/CustomCursor";
 import Navbar from "~/components/Navbar";
 import Hero from "~/components/Hero";
 import About from "~/components/About";
@@ -46,7 +45,6 @@ export default function Index() {
   return (
     <>
       <Preloader />
-      <CustomCursor />
       <div className="relative">
         <Navbar />
         <main>

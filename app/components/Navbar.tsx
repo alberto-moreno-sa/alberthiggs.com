@@ -11,6 +11,11 @@ const navLinks = [
   { label: "Contact", href: "#contact", num: "07" },
 ];
 
+function scrollTo(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
+  e.preventDefault();
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -43,7 +48,11 @@ export default function Navbar() {
       }`}
     >
       <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
-        <a href="#hero" className="flex items-center gap-2 group">
+        <a
+          href="#hero"
+          onClick={(e) => scrollTo(e, "hero")}
+          className="flex items-center gap-2 group"
+        >
           <span className="font-mono text-lg font-bold text-accent group-hover:opacity-80 transition-opacity">
             AM
           </span>
@@ -60,7 +69,10 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => trackNavClick(link.label.toLowerCase())}
+                onClick={(e) => {
+                  scrollTo(e, sectionId);
+                  trackNavClick(link.label.toLowerCase());
+                }}
                 className={`nav-link relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   activeSection === sectionId
                     ? "text-accent nav-link-active"
@@ -122,7 +134,8 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => {
+                onClick={(e) => {
+                  scrollTo(e, sectionId);
                   setMobileOpen(false);
                   trackNavClick(link.label.toLowerCase());
                 }}
