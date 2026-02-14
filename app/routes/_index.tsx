@@ -58,7 +58,7 @@ export default function Index() {
             <Await resolve={personal}>
               {(data) => (
                 <>
-                  <Hero personalInfo={data} />
+                  <Hero personalInfo={data} resumeUrl={data.resumeUrl} />
                   <About personalInfo={data} />
                 </>
               )}
