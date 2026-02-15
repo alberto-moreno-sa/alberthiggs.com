@@ -31,7 +31,7 @@ export const GoogleAnalytics = ({ gaTrackingId }: { gaTrackingId?: string }) => 
       />
       <script
         dangerouslySetInnerHTML={{
-          __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${safeId}',{send_page_view:true});`,
+          __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',${JSON.stringify(safeId)},{send_page_view:true});`,
         }}
       />
     </>

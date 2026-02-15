@@ -1,6 +1,12 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { ContentfulClient } from "~/lib/contentful";
 
+const ALLOWED_HOSTS = [
+  "images.ctfassets.net",
+  "downloads.ctfassets.net",
+  "assets.ctfassets.net",
+];
+
 export const loader = async ({ context }: LoaderFunctionArgs) => {
   const env = context.cloudflare.env as Env;
   const client = new ContentfulClient(
@@ -14,7 +20,14 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
     throw new Response("Resume not available", { status: 404 });
   }
 
-  const response = await fetch(personal.resumeUrl);
+  const parsed = new URL(personal.resumeUrl);
+  if (parsed.protocol !== "https:" || !ALLOWED_HOSTS.includes(parsed.hostname)) {
+    throw new Response("Invalid resume URL", { status: 400 });
+  }
+
+  const response = await fetch(personal.resumeUrl, {
+    signal: AbortSignal.timeout(10000),
+  });
 
   if (!response.ok) {
     throw new Response("Resume not available", { status: 502 });
