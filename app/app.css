@@ -183,6 +183,15 @@ body {
   animation: taco-glow 3s ease-in-out infinite;
 }
 
+/* ── Slider Scroll ── */
+.slider-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.slider-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 /* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
   *,
