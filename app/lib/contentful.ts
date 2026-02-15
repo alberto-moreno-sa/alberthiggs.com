@@ -93,6 +93,7 @@ export class ContentfulClient {
   }
 
   async getAllData(): Promise<SiteData> {
+    console.log("[Contentful] Fetching via GraphQL");
     const res = await fetch(this.graphqlUrl, {
       method: "POST",
       headers: {
@@ -102,6 +103,8 @@ export class ContentfulClient {
       body: JSON.stringify({ query: ALL_SECTIONS_QUERY }),
       cf: { cacheTtl: 3600, cacheEverything: true },
     });
+
+    console.log("[Contentful] cf-cache-status:", res.headers.get("cf-cache-status"));
 
     if (!res.ok) {
       throw new Error(`Contentful GraphQL error: ${res.status}`);
