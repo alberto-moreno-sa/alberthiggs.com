@@ -32,7 +32,7 @@ export interface Experience {
 export interface Project {
   name: string;
   slug: string;
-  description: string;
+  shortDescription: string;
   longDescription: string;
   githubUrl?: string;
   liveUrl?: string;
