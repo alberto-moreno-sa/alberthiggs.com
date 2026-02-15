@@ -1,6 +1,14 @@
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import type { Testimonial } from "~/lib/contentful";
 
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
 function TestimonialCard({
   testimonial,
   index,
@@ -41,7 +49,7 @@ function TestimonialCard({
       <div className="flex items-center gap-3 pt-4 border-t border-border/30">
         {testimonial.avatarUrl ? (
           <img
-            src={testimonial.avatarUrl}
+            src={`/testimonial-avatar/${slugify(testimonial.name)}`}
             alt={testimonial.name}
             className="w-10 h-10 rounded-full border border-accent/20 object-cover"
           />
