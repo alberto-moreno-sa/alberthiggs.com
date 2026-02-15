@@ -1,22 +1,15 @@
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import type { Testimonial } from "~/lib/contentful";
+import { slugify } from "~/lib/slugify";
 
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
-}
-
-function TestimonialCard({
+const TestimonialCard = ({
   testimonial,
   index,
 }: {
   testimonial: Testimonial;
   index: number;
-}) {
-  const { ref, isVisible } = useScrollAnimation(0.1);
+}) => {
+  const { ref, isVisible } = useScrollAnimation<HTMLElement>(0.1);
 
   const initials = testimonial.name
     .split(" ")
@@ -25,14 +18,8 @@ function TestimonialCard({
     .slice(0, 2)
     .toUpperCase();
 
-  return (
-    <div
-      ref={ref}
-      className={`group rounded-2xl border border-border bg-card/50 p-6 md:p-8 hover:border-border-light transition-all duration-500 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
-      style={{ transitionDelay: `${index * 120}ms` }}
-    >
+  const content = (
+    <>
       {/* Quote icon */}
       <div className="text-accent/30 mb-4">
         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
@@ -49,7 +36,7 @@ function TestimonialCard({
       <div className="flex items-center gap-3 pt-4 border-t border-border/30">
         {testimonial.avatarUrl ? (
           <img
-            src={`/testimonial-avatar/${slugify(testimonial.name)}`}
+            src={`/asset/testimonial/${slugify(testimonial.name)}`}
             alt={testimonial.name}
             className="w-10 h-10 rounded-full border border-accent/20 object-cover"
           />
@@ -60,7 +47,7 @@ function TestimonialCard({
             </span>
           </div>
         )}
-        <div>
+        <div className="flex-1">
           <div className="text-sm font-semibold text-text-primary">
             {testimonial.name}
           </div>
@@ -68,16 +55,59 @@ function TestimonialCard({
             {testimonial.role} @ {testimonial.company}
           </div>
         </div>
+        {testimonial.linkedInUrl && (
+          <span className="text-xs text-text-muted group-hover:text-accent transition-colors font-mono flex items-center gap-1">
+            Ver perfil
+            <svg
+              className="w-3 h-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
+              />
+            </svg>
+          </span>
+        )}
       </div>
+    </>
+  );
+
+  const cardClass = `group rounded-2xl border border-border bg-card/50 p-6 md:p-8 hover:border-border-light transition-all duration-500 block ${
+    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+  }`;
+
+  return testimonial.linkedInUrl ? (
+    <a
+      ref={ref as React.RefObject<HTMLAnchorElement>}
+      href={testimonial.linkedInUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cardClass}
+      style={{ transitionDelay: `${index * 120}ms` }}
+    >
+      {content}
+    </a>
+  ) : (
+    <div
+      ref={ref}
+      className={cardClass}
+      style={{ transitionDelay: `${index * 120}ms` }}
+    >
+      {content}
     </div>
   );
-}
+};
 
-export default function Testimonials({
+const Testimonials = ({
   testimonials,
 }: {
   testimonials: Testimonial[];
-}) {
+}) => {
   const { ref, isVisible } = useScrollAnimation();
 
   if (testimonials.length === 0) return null;
@@ -109,4 +139,6 @@ export default function Testimonials({
       </div>
     </section>
   );
-}
+};
+
+export default Testimonials;

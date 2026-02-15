@@ -1,10 +1,13 @@
 import {
   Links,
+  Link,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useRouteLoaderData,
+  isRouteErrorResponse,
+  useRouteError,
 } from "@remix-run/react";
 import type {
   LinksFunction,
@@ -13,42 +16,12 @@ import type {
 } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
 import { GoogleAnalytics } from "~/components/GoogleAnalytics";
+import { rootMeta, rootLinks } from "~/lib/seo";
 import "./app.css";
 
-export const links: LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous" as const,
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
-  },
-];
+export const links: LinksFunction = () => rootLinks;
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Alberto Moreno — Senior Software Engineer" },
-    {
-      name: "description",
-      content:
-        "Senior Software Engineer with 13+ years of experience architecting scalable frontend ecosystems. Specialized in React, TypeScript, and high-performance web applications.",
-    },
-    { name: "theme-color", content: "#0a0a0a" },
-    {
-      property: "og:title",
-      content: "Alberto Moreno — Senior Software Engineer",
-    },
-    {
-      property: "og:description",
-      content:
-        "13+ years architecting scalable frontend ecosystems supporting millions of users.",
-    },
-    { property: "og:type", content: "website" },
-  ];
-};
+export const meta: MetaFunction = () => rootMeta;
 
 export function loader({ context }: LoaderFunctionArgs) {
   const env = context.cloudflare.env as Env;
@@ -78,4 +51,54 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return <Outlet />;
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  let status = 500;
+  let message = "Something went wrong";
+
+  if (isRouteErrorResponse(error)) {
+    status = error.status;
+    message =
+      error.status === 404
+        ? "Page not found"
+        : error.statusText || "Something went wrong";
+  }
+
+  return (
+    <div className="min-h-screen bg-bg flex items-center justify-center px-6">
+      <div className="text-center max-w-md">
+        <div className="font-mono text-accent text-8xl font-bold mb-4">
+          {status}
+        </div>
+        <p className="text-text-secondary text-lg mb-2">{message}</p>
+        <p className="text-text-muted text-sm mb-8">
+          {status === 404
+            ? "The page you're looking for doesn't exist or has been moved."
+            : "An unexpected error occurred. Please try again later."}
+        </p>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-accent/30 text-accent hover:bg-accent/10 transition-colors font-mono text-sm"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+            />
+          </svg>
+          Back to home
+        </Link>
+      </div>
+    </div>
+  );
 }

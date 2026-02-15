@@ -50,6 +50,7 @@ export interface Testimonial {
   company: string;
   quote: string;
   avatarUrl?: string;
+  linkedInUrl?: string;
 }
 
 export interface SkillCategory {

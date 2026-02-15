@@ -110,13 +110,13 @@ const defaultIcon = (
   </svg>
 );
 
-function SkillCard({
+const SkillCard = ({
   category,
   index,
 }: {
   category: SkillCategory;
   index: number;
-}) {
+}) => {
   const { ref, isVisible } = useScrollAnimation(0.1);
 
   return (
@@ -153,13 +153,13 @@ function SkillCard({
       </div>
     </div>
   );
-}
+};
 
-export default function Skills({
+const Skills = ({
   skillCategories,
 }: {
   skillCategories: SkillCategory[];
-}) {
+}) => {
   const { ref, isVisible } = useScrollAnimation();
 
   return (
@@ -184,4 +184,6 @@ export default function Skills({
       </div>
     </section>
   );
-}
+};
+
+export default Skills;

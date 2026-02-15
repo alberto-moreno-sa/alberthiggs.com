@@ -2,11 +2,7 @@ import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import type { PersonalInfo } from "~/lib/contentful";
 import { trackCtaClick, trackSocialClick } from "~/lib/analytics";
 
-export default function Contact({
-  personalInfo,
-}: {
-  personalInfo: PersonalInfo;
-}) {
+const Contact = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
   const { ref, isVisible } = useScrollAnimation();
 
   return (
@@ -148,4 +144,6 @@ export default function Contact({
       </div>
     </section>
   );
-}
+};
+
+export default Contact;

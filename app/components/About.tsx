@@ -1,11 +1,7 @@
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import type { PersonalInfo } from "~/lib/contentful";
 
-export default function About({
-  personalInfo,
-}: {
-  personalInfo: PersonalInfo;
-}) {
+const About = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
   const { ref, isVisible } = useScrollAnimation();
 
   return (
@@ -64,4 +60,6 @@ export default function About({
       </div>
     </section>
   );
-}
+};
+
+export default About;

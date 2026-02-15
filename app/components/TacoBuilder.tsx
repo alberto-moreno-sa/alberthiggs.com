@@ -51,17 +51,13 @@ const TACO_LAYERS: TacoLayer[] = [
   },
 ];
 
-function getLayerOpacity(progress: number, threshold: number): number {
-  if (progress < threshold) return 0;
-  return Math.min(1, (progress - threshold) / 0.15);
-}
+const getLayerOpacity = (progress: number, threshold: number): number =>
+  progress < threshold ? 0 : Math.min(1, (progress - threshold) / 0.15);
 
-function getLayerTranslateY(progress: number, threshold: number): number {
-  if (progress < threshold) return 20;
-  return Math.max(0, 20 * (1 - (progress - threshold) / 0.15));
-}
+const getLayerTranslateY = (progress: number, threshold: number): number =>
+  progress < threshold ? 20 : Math.max(0, 20 * (1 - (progress - threshold) / 0.15));
 
-function TacoVisual({ progress }: { progress: number }) {
+const TacoVisual = ({ progress }: { progress: number }) => {
   const isComplete = progress >= 0.95;
 
   return (
@@ -196,9 +192,9 @@ function TacoVisual({ progress }: { progress: number }) {
       </g>
     </svg>
   );
-}
+};
 
-function IngredientText({ progress }: { progress: number }) {
+const IngredientText = ({ progress }: { progress: number }) => {
   const activeIndex = TACO_LAYERS.reduce(
     (acc, layer, i) => (progress >= layer.threshold ? i : acc),
     0,
@@ -228,24 +224,22 @@ function IngredientText({ progress }: { progress: number }) {
       ))}
     </div>
   );
-}
+};
 
-function ProgressDots({ progress }: { progress: number }) {
-  return (
-    <div className="flex items-center gap-3">
-      {TACO_LAYERS.map((layer) => (
-        <div
-          key={layer.id}
-          className={`w-2 h-2 rounded-full transition-all duration-300 ${
-            progress >= layer.threshold ? "bg-accent scale-125" : "bg-border"
-          }`}
-        />
-      ))}
-    </div>
-  );
-}
+const ProgressDots = ({ progress }: { progress: number }) => (
+  <div className="flex items-center gap-3">
+    {TACO_LAYERS.map((layer) => (
+      <div
+        key={layer.id}
+        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+          progress >= layer.threshold ? "bg-accent scale-125" : "bg-border"
+        }`}
+      />
+    ))}
+  </div>
+);
 
-export default function TacoBuilder() {
+const TacoBuilder = () => {
   const { ref, progress } = useScrollProgress();
 
   return (
@@ -283,4 +277,6 @@ export default function TacoBuilder() {
       </div>
     </section>
   );
-}
+};
+
+export default TacoBuilder;

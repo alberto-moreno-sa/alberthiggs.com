@@ -9,7 +9,7 @@ import { trackPageView } from "~/lib/analytics";
 // GA measurement IDs are always G-XXXXXXXXXX or UA-XXXXXXXX-X
 const GA_ID_PATTERN = /^(G|UA)-[A-Z0-9-]+$/i;
 
-export function GoogleAnalytics({ gaTrackingId }: { gaTrackingId?: string }) {
+export const GoogleAnalytics = ({ gaTrackingId }: { gaTrackingId?: string }) => {
   const location = useLocation();
 
   const safeId =
@@ -36,4 +36,4 @@ export function GoogleAnalytics({ gaTrackingId }: { gaTrackingId?: string }) {
       />
     </>
   );
-}
+};

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
-export function useScrollProgress(): {
+export const useScrollProgress = (): {
   ref: React.RefObject<HTMLDivElement>;
   progress: number;
-} {
+} => {
   const ref = useRef<HTMLDivElement>(null!);
   const [progress, setProgress] = useState(0);
   const rafRef = useRef<number>(0);
@@ -45,4 +45,4 @@ export function useScrollProgress(): {
   }, []);
 
   return { ref, progress };
-}
+};
