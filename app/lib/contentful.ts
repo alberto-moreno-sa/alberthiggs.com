@@ -5,7 +5,6 @@ export interface PersonalInfo {
   title: string;
   email: string;
   phone?: string;
-  location?: string;
   githubUrl?: string;
   linkedinUrl?: string;
   heroTagline: string;
@@ -20,11 +19,9 @@ export interface Experience {
   company: string;
   role: string;
   period: string;
-  location?: string;
   description: string;
   website?: string;
   imageUrl?: string;
-  color?: string;
   achievements: { text: string; metric: string }[];
   technologies: string[];
 }
@@ -40,7 +37,6 @@ export interface Project {
   technologies: string[];
   highlights: string[];
   featured: boolean;
-  gradient?: string;
   category?: string;
 }
 
@@ -59,67 +55,84 @@ export interface SkillCategory {
   skills: string[];
 }
 
-// Contentful CDN types
-interface SiteSectionEntry<T> {
-  sys: { id: string };
-  fields: {
-    sectionId: string;
-    title: string;
-    content: T;
+export interface SiteData {
+  personal: PersonalInfo;
+  experience: Experience[];
+  projects: Project[];
+  skills: SkillCategory[];
+  testimonials: Testimonial[];
+}
+
+// GraphQL response types
+interface GraphQLResponse {
+  data: {
+    siteSectionCollection: {
+      items: { sectionId: string; content: unknown }[];
+    };
   };
+  errors?: { message: string }[];
 }
 
-interface ContentfulResponse<T> {
-  items: SiteSectionEntry<T>[];
-  total: number;
-}
+const ALL_SECTIONS_QUERY = `{
+  siteSectionCollection {
+    items {
+      sectionId
+      content
+    }
+  }
+}`;
 
-// Client — one fetch per section
+// Client — single GraphQL query for all sections
 export class ContentfulClient {
-  private baseUrl: string;
+  private graphqlUrl: string;
   private accessToken: string;
 
   constructor(spaceId: string, accessToken: string) {
     this.accessToken = accessToken;
-    this.baseUrl = `https://cdn.contentful.com/spaces/${spaceId}/environments/master`;
+    this.graphqlUrl = `https://graphql.contentful.com/content/v1/spaces/${spaceId}/environments/master`;
   }
 
-  private async fetchSection<T>(sectionId: string): Promise<T> {
-    const url = `${this.baseUrl}/entries?content_type=siteSection&fields.sectionId=${sectionId}&limit=1`;
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${this.accessToken}` },
+  async getAllData(): Promise<SiteData> {
+    const res = await fetch(this.graphqlUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.accessToken}`,
+      },
+      body: JSON.stringify({ query: ALL_SECTIONS_QUERY }),
+      cf: { cacheTtl: 3600, cacheEverything: true },
     });
+
     if (!res.ok) {
-      throw new Error(`Contentful error: ${res.status}`);
+      throw new Error(`Contentful GraphQL error: ${res.status}`);
     }
-    const data: ContentfulResponse<T> = await res.json();
-    if (!data.items.length) {
-      throw new Error(`Section "${sectionId}" not found`);
+
+    const json: GraphQLResponse = await res.json();
+    if (json.errors?.length) {
+      throw new Error(`Contentful GraphQL: ${json.errors[0].message}`);
     }
-    return data.items[0].fields.content;
-  }
 
-  getPersonal() {
-    return this.fetchSection<PersonalInfo>("personal");
-  }
+    const sections = new Map(
+      json.data.siteSectionCollection.items.map((item) => [
+        item.sectionId,
+        item.content,
+      ]),
+    );
 
-  getExperience() {
-    return this.fetchSection<Experience[]>("experience");
-  }
+    const get = <T>(id: string): T => {
+      const content = sections.get(id);
+      if (content === undefined) throw new Error(`Section "${id}" not found`);
+      return content as T;
+    };
 
-  getProjects() {
-    return this.fetchSection<Project[]>("projects");
-  }
-
-  getSkills() {
-    return this.fetchSection<SkillCategory[]>("skills");
-  }
-
-  async getTestimonials() {
-    try {
-      return await this.fetchSection<Testimonial[]>("testimonials");
-    } catch {
-      return [] as Testimonial[];
-    }
+    return {
+      personal: get<PersonalInfo>("personal"),
+      experience: get<Experience[]>("experience"),
+      projects: get<Project[]>("projects"),
+      skills: get<SkillCategory[]>("skills"),
+      testimonials: sections.has("testimonials")
+        ? (sections.get("testimonials") as Testimonial[])
+        : [],
+    };
   }
 }

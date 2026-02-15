@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { ContentfulClient } from "~/lib/contentful";
+import { ContentfulClient, type SiteData } from "~/lib/contentful";
 import { slugify } from "~/lib/slugify";
 
 const ALLOWED_HOSTS = [
@@ -23,25 +23,22 @@ const validateAssetUrl = (url: string) => {
   }
 };
 
-const resolveImageUrl = async (
-  client: ContentfulClient,
+const resolveImageUrl = (
+  data: SiteData,
   type: string,
   slug: string,
-): Promise<string | undefined> => {
+): string | undefined => {
   switch (type) {
     case "experience": {
-      const experiences = await client.getExperience();
-      const match = experiences.find((e) => slugify(e.company) === slug);
+      const match = data.experience.find((e) => slugify(e.company) === slug);
       return match?.imageUrl;
     }
     case "project": {
-      const projects = await client.getProjects();
-      const match = projects.find((p) => p.slug === slug);
+      const match = data.projects.find((p) => p.slug === slug);
       return match?.imageUrl;
     }
     case "testimonial": {
-      const testimonials = await client.getTestimonials();
-      const match = testimonials.find((t) => slugify(t.name) === slug);
+      const match = data.testimonials.find((t) => slugify(t.name) === slug);
       return match?.avatarUrl;
     }
     default:
@@ -57,7 +54,8 @@ export const loader = async ({ params, context }: LoaderFunctionArgs) => {
     env.CONTENTFUL_ACCESS_TOKEN,
   );
 
-  const imageUrl = await resolveImageUrl(client, type!, slug!);
+  const data = await client.getAllData();
+  const imageUrl = resolveImageUrl(data, type!, slug!);
   if (!imageUrl) {
     throw new Response("Asset not found", { status: 404 });
   }
