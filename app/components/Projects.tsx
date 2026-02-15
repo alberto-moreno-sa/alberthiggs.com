@@ -118,12 +118,12 @@ const FeaturedProject = ({
 
   return (
     <div
-      className="group relative rounded-xl border border-border bg-card/50 overflow-hidden hover:border-border-light transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 h-full flex flex-col animate-fade-in-up"
+      className="group relative rounded-xl border border-border bg-card/50 hover:border-border-light transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 h-full flex flex-col animate-fade-in-up"
       style={{ animationDelay: `${index * 150}ms` }}
     >
       {/* Image thumbnail or accent bar */}
       {project.imageUrl ? (
-        <div className="aspect-video overflow-hidden">
+        <div className="aspect-video overflow-hidden rounded-t-xl">
           <img
             src={`/asset/project/${project.slug}`}
             alt={project.name}
@@ -195,27 +195,37 @@ const FeaturedProject = ({
         </h3>
 
         {/* Description */}
-        <p
-          className={`text-text-secondary text-sm leading-relaxed mb-4 ${isExpanded ? "" : "line-clamp-5 cursor-help"}`}
-          title={!isExpanded ? project.longDescription : undefined}
-        >
-          {project.longDescription}
+        <p className={`text-text-secondary text-sm leading-relaxed mb-4 ${!isExpanded ? "line-clamp-3 min-h-[4.875em]" : ""}`}>
+          {isExpanded ? project.longDescription : project.shortDescription}
         </p>
 
-        {/* Technologies (collapsed: 2 rows with title tooltip) */}
+        {/* Technologies (collapsed: 2 rows with tooltip) */}
         {!isExpanded && (
-          <div
-            className="flex flex-wrap gap-2 max-h-[52px] overflow-hidden mb-4 cursor-help"
-            title={project.technologies.join(", ")}
-          >
-            {project.technologies.map((tech) => (
-              <span
-                key={tech}
-                className="px-2 py-0.5 text-xs font-mono text-accent/70 bg-accent/5 border border-accent/10 rounded"
-              >
-                {tech}
-              </span>
-            ))}
+          <div className="relative group/tech mb-4">
+            <div className="flex flex-wrap gap-2 min-h-[52px] max-h-[52px] overflow-hidden cursor-default">
+              {project.technologies.map((tech) => (
+                <span
+                  key={tech}
+                  className="px-2 py-0.5 text-xs font-mono text-accent/70 bg-accent/5 border border-accent/10 rounded h-fit whitespace-nowrap"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+            {project.technologies.length >= 3 && (
+              <div className="invisible group-hover/tech:visible opacity-0 group-hover/tech:opacity-100 transition-all duration-200 absolute z-50 bottom-full left-0 right-0 mb-2 p-3 bg-surface border border-border rounded-lg shadow-xl shadow-black/40">
+                <div className="flex flex-wrap gap-2">
+                  {project.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-2 py-0.5 text-xs font-mono text-accent/70 bg-accent/5 border border-accent/10 rounded"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -339,8 +349,8 @@ const SmallProject = ({ project, index }: { project: Project; index: number }) =
         <h4 className="font-bold text-text-primary group-hover:text-accent transition-colors mb-2 font-mono">
           {project.name}
         </h4>
-        <p className="text-text-secondary text-xs leading-relaxed mb-3">
-          {project.description}
+        <p className="text-text-secondary text-xs leading-relaxed mb-3 line-clamp-3 min-h-[4.875em]">
+          {project.shortDescription}
         </p>
 
         <div className="flex items-center gap-1 text-accent/70 text-[10px]">
