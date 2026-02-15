@@ -1,7 +1,110 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import { useExpandable } from "~/hooks/useExpandable";
 import type { Project } from "~/lib/contentful";
+
+const ChevronLeft = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+  </svg>
+);
+
+const ChevronRight = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+  </svg>
+);
+
+const ProjectSlider = ({
+  children,
+  gap = 24,
+  label,
+  showControls,
+}: {
+  children: React.ReactNode;
+  gap?: number;
+  label: string;
+  showControls: boolean;
+}) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  };
+
+  const scroll = (direction: "left" | "right") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardWidth =
+      el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? 300;
+    el.scrollBy({
+      left: direction === "left" ? -(cardWidth + gap) : cardWidth + gap,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-text-secondary font-mono">
+          {label}
+        </h3>
+        {showControls && (
+          <SliderControls
+            canScrollLeft={canScrollLeft}
+            canScrollRight={canScrollRight}
+            onScrollLeft={() => scroll("left")}
+            onScrollRight={() => scroll("right")}
+          />
+        )}
+      </div>
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex sm:items-start overflow-x-auto pb-4 snap-x snap-mandatory slider-scroll"
+        style={{ gap }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const SliderControls = ({
+  canScrollLeft,
+  canScrollRight,
+  onScrollLeft,
+  onScrollRight,
+}: {
+  canScrollLeft: boolean;
+  canScrollRight: boolean;
+  onScrollLeft: () => void;
+  onScrollRight: () => void;
+}) => (
+  <div className="hidden sm:flex items-center gap-2">
+    <button
+      onClick={onScrollLeft}
+      disabled={!canScrollLeft}
+      aria-label="Scroll left"
+      className="p-1.5 rounded-lg border border-border text-text-muted hover:text-accent hover:border-accent/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+    >
+      <ChevronLeft className="w-4 h-4" />
+    </button>
+    <button
+      onClick={onScrollRight}
+      disabled={!canScrollRight}
+      aria-label="Scroll right"
+      className="p-1.5 rounded-lg border border-border text-text-muted hover:text-accent hover:border-accent/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+    >
+      <ChevronRight className="w-4 h-4" />
+    </button>
+  </div>
+);
 
 const FeaturedProject = ({
   project,
@@ -10,17 +113,13 @@ const FeaturedProject = ({
   project: Project;
   index: number;
 }) => {
-  const { ref, isVisible } = useScrollAnimation(0.1);
   const { isExpanded, contentRef, contentHeight, triggerProps } =
     useExpandable();
 
   return (
     <div
-      ref={ref}
-      className={`group relative rounded-xl border border-border bg-card/50 overflow-hidden hover:border-border-light transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
-      style={{ transitionDelay: `${index * 150}ms` }}
+      className="group relative rounded-xl border border-border bg-card/50 overflow-hidden hover:border-border-light transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20 h-full flex flex-col animate-fade-in-up"
+      style={{ animationDelay: `${index * 150}ms` }}
     >
       {/* Image thumbnail or accent bar */}
       {project.imageUrl ? (
@@ -35,7 +134,7 @@ const FeaturedProject = ({
         <div className="h-1 bg-accent/30" />
       )}
 
-      <div className="p-6 md:p-8">
+      <div className="p-6 md:p-8 flex-1 flex flex-col">
         {/* Top row */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -96,11 +195,12 @@ const FeaturedProject = ({
         </h3>
 
         {/* Description */}
-        <p className="text-text-secondary text-sm leading-relaxed mb-4">
+        <p className={`text-text-secondary text-sm leading-relaxed mb-4 ${isExpanded ? "" : "line-clamp-5"}`}>
           {project.longDescription}
         </p>
 
         {/* Expand trigger */}
+        <div className="mt-auto" />
         <div
           {...triggerProps}
           className="flex items-center gap-2 text-accent/70 text-xs cursor-pointer select-none mb-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
@@ -164,17 +264,13 @@ const FeaturedProject = ({
 };
 
 const SmallProject = ({ project, index }: { project: Project; index: number }) => {
-  const { ref, isVisible } = useScrollAnimation(0.1);
   const { isExpanded, contentRef, contentHeight, triggerProps } =
     useExpandable();
 
   return (
     <div
-      ref={ref}
-      className={`group rounded-xl border border-border bg-card/30 p-5 hover:border-border-light transition-all duration-300 hover:-translate-y-0.5 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
-      style={{ transitionDelay: `${index * 100}ms` }}
+      className="group rounded-xl border border-border bg-card/30 p-5 hover:border-border-light transition-all duration-300 hover:-translate-y-0.5 animate-fade-in-up"
+      style={{ animationDelay: `${index * 100}ms` }}
     >
       <div className="flex items-start justify-between mb-3">
         <div className="h-1 w-8 rounded-full bg-accent/30" />
@@ -290,7 +386,7 @@ const ProjectFilterTabs = ({
         role="tab"
         aria-selected={activeCategory === cat}
         onClick={() => onSelect(cat)}
-        className={`px-4 py-2 text-sm font-mono rounded-lg border transition-all duration-300 ${
+        className={`px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm font-mono rounded-lg border transition-all duration-300 ${
           activeCategory === cat
             ? "bg-accent text-bg border-accent"
             : "border-border text-text-muted hover:border-accent/30 hover:text-accent bg-card/30"
@@ -339,7 +435,7 @@ const Projects = ({
   };
 
   return (
-    <section id="projects" className="relative py-24">
+    <section id="projects" className="relative py-16 md:py-24">
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Section header */}
         <div
@@ -364,35 +460,34 @@ const Projects = ({
         <div
           className={`transition-opacity duration-200 ${transitioning ? "opacity-0" : "opacity-100"}`}
         >
-          {/* Featured projects grid */}
+          {/* Featured projects slider */}
           {featured.length > 0 && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-              {featured.map((project, i) => (
-                <FeaturedProject
-                  key={project.slug}
-                  project={project}
-                  index={i}
-                />
-              ))}
+            <div className="mb-10 md:mb-16">
+              <ProjectSlider label="Featured" gap={24} showControls={featured.length > 2}>
+                {featured.map((project, i) => (
+                  <div
+                    key={project.slug}
+                    className="w-[min(78vw,380px)] shrink-0 snap-start"
+                  >
+                    <FeaturedProject project={project} index={i} />
+                  </div>
+                ))}
+              </ProjectSlider>
             </div>
           )}
 
-          {/* Other projects */}
+          {/* Other projects slider */}
           {other.length > 0 && (
-            <>
-              <h3 className="text-lg font-semibold text-text-secondary mb-8 font-mono">
-                Other Projects
-              </h3>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {other.map((project, i) => (
-                  <SmallProject
-                    key={project.slug}
-                    project={project}
-                    index={i}
-                  />
-                ))}
-              </div>
-            </>
+            <ProjectSlider label="Other Projects" gap={16} showControls={other.length > 3}>
+              {other.map((project, i) => (
+                <div
+                  key={project.slug}
+                  className="w-[min(85vw,320px)] shrink-0 snap-start"
+                >
+                  <SmallProject project={project} index={i} />
+                </div>
+              ))}
+            </ProjectSlider>
           )}
 
           {filteredProjects.length === 0 && (
@@ -404,7 +499,7 @@ const Projects = ({
 
         {/* GitHub CTA */}
         {githubUrl && (
-          <div className="text-center mt-16">
+          <div className="text-center mt-10 md:mt-16">
             <a
               href={githubUrl}
               target="_blank"
