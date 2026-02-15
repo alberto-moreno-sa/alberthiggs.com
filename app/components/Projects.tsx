@@ -66,7 +66,7 @@ const ProjectSlider = ({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex sm:items-start overflow-x-auto pb-4 snap-x snap-mandatory slider-scroll"
+        className="flex items-start overflow-x-auto pb-4 snap-x snap-mandatory slider-scroll"
         style={{ gap }}
       >
         {children}
@@ -195,9 +195,29 @@ const FeaturedProject = ({
         </h3>
 
         {/* Description */}
-        <p className={`text-text-secondary text-sm leading-relaxed mb-4 ${isExpanded ? "" : "line-clamp-5"}`}>
+        <p
+          className={`text-text-secondary text-sm leading-relaxed mb-4 ${isExpanded ? "" : "line-clamp-5 cursor-help"}`}
+          title={!isExpanded ? project.longDescription : undefined}
+        >
           {project.longDescription}
         </p>
+
+        {/* Technologies (collapsed: 2 rows with title tooltip) */}
+        {!isExpanded && (
+          <div
+            className="flex flex-wrap gap-2 max-h-[52px] overflow-hidden mb-4 cursor-help"
+            title={project.technologies.join(", ")}
+          >
+            {project.technologies.map((tech) => (
+              <span
+                key={tech}
+                className="px-2 py-0.5 text-xs font-mono text-accent/70 bg-accent/5 border border-accent/10 rounded"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Expand trigger */}
         <div className="mt-auto" />
