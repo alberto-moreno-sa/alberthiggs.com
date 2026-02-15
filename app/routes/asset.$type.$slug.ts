@@ -2,6 +2,27 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { ContentfulClient } from "~/lib/contentful";
 import { slugify } from "~/lib/slugify";
 
+const ALLOWED_HOSTS = [
+  "images.ctfassets.net",
+  "downloads.ctfassets.net",
+  "assets.ctfassets.net",
+];
+
+const VALID_CONTENT_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/svg+xml",
+  "image/gif",
+];
+
+const validateAssetUrl = (url: string) => {
+  const parsed = new URL(url);
+  if (parsed.protocol !== "https:" || !ALLOWED_HOSTS.includes(parsed.hostname)) {
+    throw new Response("Invalid asset URL", { status: 400 });
+  }
+};
+
 const resolveImageUrl = async (
   client: ContentfulClient,
   type: string,
@@ -41,14 +62,23 @@ export const loader = async ({ params, context }: LoaderFunctionArgs) => {
     throw new Response("Asset not found", { status: 404 });
   }
 
-  const response = await fetch(imageUrl);
+  validateAssetUrl(imageUrl);
+
+  const response = await fetch(imageUrl, {
+    signal: AbortSignal.timeout(5000),
+  });
   if (!response.ok) {
     throw new Response("Asset not available", { status: 502 });
   }
 
+  const contentType = response.headers.get("Content-Type") || "";
+  if (!VALID_CONTENT_TYPES.some((t) => contentType.includes(t))) {
+    throw new Response("Invalid content type", { status: 400 });
+  }
+
   return new Response(response.body, {
     headers: {
-      "Content-Type": response.headers.get("Content-Type") || "image/jpeg",
+      "Content-Type": contentType,
       "Cache-Control": "public, max-age=86400, s-maxage=604800",
     },
   });
