@@ -14,7 +14,7 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
     env.CONTENTFUL_ACCESS_TOKEN,
   );
 
-  const personal = await client.getPersonal();
+  const { personal } = await client.getAllData();
 
   if (!personal.resumeUrl) {
     throw new Response("Resume not available", { status: 404 });

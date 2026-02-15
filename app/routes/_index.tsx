@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { defer, type LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { useLoaderData, Await } from "@remix-run/react";
-import { ContentfulClient } from "~/lib/contentful";
+import { ContentfulClient, type SiteData } from "~/lib/contentful";
 import Navbar from "~/components/Navbar";
 import Hero from "~/components/Hero";
 import About from "~/components/About";
@@ -27,73 +27,64 @@ export const loader = ({ context }: LoaderFunctionArgs) => {
   );
 
   return defer({
-    personal: client.getPersonal(),
-    experience: client.getExperience(),
-    projects: client.getProjects(),
-    skills: client.getSkills(),
-    testimonials: client.getTestimonials(),
+    siteData: client.getAllData(),
   });
 };
 
 const Index = () => {
-  const { personal, experience, projects, skills, testimonials } =
-    useLoaderData<typeof loader>();
+  const { siteData } = useLoaderData<typeof loader>();
 
   return (
     <div className="relative">
       <Navbar />
       <main>
         <Suspense fallback={<HeroAboutSkeleton />}>
-          <Await resolve={personal}>
-            {(data) => (
+          <Await resolve={siteData}>
+            {(data: SiteData) => (
               <>
-                <Hero personalInfo={data} />
-                <About personalInfo={data} />
+                <Hero personalInfo={data.personal} />
+                <About personalInfo={data.personal} />
               </>
             )}
           </Await>
         </Suspense>
 
         <Suspense fallback={<ExperienceSkeleton />}>
-          <Await resolve={experience}>
-            {(data) => <Experience experiences={data} />}
+          <Await resolve={siteData}>
+            {(data: SiteData) => <Experience experiences={data.experience} />}
           </Await>
         </Suspense>
 
         <Suspense fallback={<ProjectsSkeleton />}>
-          <Await resolve={projects}>
-            {(data) => (
-              <Suspense fallback={null}>
-                <Await resolve={personal}>
-                  {(personalData) => (
-                    <Projects
-                      projects={data}
-                      githubUrl={personalData.githubUrl}
-                    />
-                  )}
-                </Await>
-              </Suspense>
+          <Await resolve={siteData}>
+            {(data: SiteData) => (
+              <Projects
+                projects={data.projects}
+                githubUrl={data.personal.githubUrl}
+              />
             )}
           </Await>
         </Suspense>
 
         <Suspense fallback={<SkillsSkeleton />}>
-          <Await resolve={skills}>
-            {(data) => <Skills skillCategories={data} />}
+          <Await resolve={siteData}>
+            {(data: SiteData) => <Skills skillCategories={data.skills} />}
           </Await>
         </Suspense>
 
         <TacoBuilder />
 
         <Suspense fallback={<TestimonialsSkeleton />}>
-          <Await resolve={testimonials}>
-            {(data) => <Testimonials testimonials={data} />}
+          <Await resolve={siteData}>
+            {(data: SiteData) => (
+              <Testimonials testimonials={data.testimonials} />
+            )}
           </Await>
         </Suspense>
 
         <Suspense fallback={<ContactSkeleton />}>
-          <Await resolve={personal}>
-            {(data) => <Contact personalInfo={data} />}
+          <Await resolve={siteData}>
+            {(data: SiteData) => <Contact personalInfo={data.personal} />}
           </Await>
         </Suspense>
       </main>
