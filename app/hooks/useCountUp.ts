@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
-export function useCountUp(
+export const useCountUp = (
   target: number,
   isActive: boolean,
   options?: { duration?: number },
-): number {
+): number => {
   const duration = options?.duration ?? 2000;
   const [value, setValue] = useState(0);
   const rafRef = useRef<number>(0);
@@ -46,4 +46,4 @@ export function useCountUp(
   }, [isActive, target, duration]);
 
   return value;
-}
+};

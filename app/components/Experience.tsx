@@ -2,14 +2,15 @@ import { useState } from "react";
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import { useExpandable } from "~/hooks/useExpandable";
 import type { Experience as ExperienceType } from "~/lib/contentful";
+import { slugify } from "~/lib/slugify";
 
-function ExperienceCard({
+const ExperienceCard = ({
   experience,
   index,
 }: {
   experience: ExperienceType;
   index: number;
-}) {
+}) => {
   const { ref, isVisible } = useScrollAnimation(0.15);
   const { isExpanded, contentRef, contentHeight, triggerProps } =
     useExpandable(true);
@@ -203,7 +204,7 @@ function ExperienceCard({
                 </div>
               ) : (
                 <img
-                  src={experience.imageUrl}
+                  src={`/asset/experience/${slugify(experience.company)}`}
                   alt={`${experience.company} website`}
                   className="w-full h-36 lg:h-40 object-cover object-top transition-transform duration-500 group-hover/preview:scale-105"
                   onError={() => setImgError(true)}
@@ -215,13 +216,13 @@ function ExperienceCard({
       </div>
     </div>
   );
-}
+};
 
-export default function Experience({
+const Experience = ({
   experiences,
 }: {
   experiences: ExperienceType[];
-}) {
+}) => {
   const { ref, isVisible } = useScrollAnimation();
 
   return (
@@ -247,4 +248,6 @@ export default function Experience({
       </div>
     </section>
   );
-}
+};
+
+export default Experience;

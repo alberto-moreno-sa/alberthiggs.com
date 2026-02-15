@@ -11,12 +11,12 @@ const navLinks = [
   { label: "Contact", href: "#contact", num: "07" },
 ];
 
-function scrollTo(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
+const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
   e.preventDefault();
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-}
+};
 
-export default function Navbar() {
+const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -168,4 +168,6 @@ export default function Navbar() {
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;

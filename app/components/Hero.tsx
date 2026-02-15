@@ -3,7 +3,7 @@ import { trackCtaClick } from "~/lib/analytics";
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import { useCountUp } from "~/hooks/useCountUp";
 
-function AnimatedStat({
+const AnimatedStat = ({
   stat,
   index,
   isVisible,
@@ -11,7 +11,7 @@ function AnimatedStat({
   stat: { value: string; label: string };
   index: number;
   isVisible: boolean;
-}) {
+}) => {
   const match = stat.value.match(/^(\d+)(.*)$/);
   const target = match ? parseInt(match[1], 10) : 0;
   const suffix = match ? match[2] : stat.value;
@@ -29,9 +29,9 @@ function AnimatedStat({
       </div>
     </div>
   );
-}
+};
 
-export default function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
+const Hero = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
   const [firstName, ...rest] = personalInfo.name.split(" ");
   const lastName = rest.join(" ");
   const { ref: statsRef, isVisible: statsVisible } = useScrollAnimation(0.3);
@@ -218,4 +218,6 @@ export default function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
       </div>
     </section>
   );
-}
+};
+
+export default Hero;

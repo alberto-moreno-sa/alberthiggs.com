@@ -3,13 +3,13 @@ import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import { useExpandable } from "~/hooks/useExpandable";
 import type { Project } from "~/lib/contentful";
 
-function FeaturedProject({
+const FeaturedProject = ({
   project,
   index,
 }: {
   project: Project;
   index: number;
-}) {
+}) => {
   const { ref, isVisible } = useScrollAnimation(0.1);
   const { isExpanded, contentRef, contentHeight, triggerProps } =
     useExpandable();
@@ -26,7 +26,7 @@ function FeaturedProject({
       {project.imageUrl ? (
         <div className="aspect-video overflow-hidden">
           <img
-            src={project.imageUrl}
+            src={`/asset/project/${project.slug}`}
             alt={project.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
@@ -161,9 +161,9 @@ function FeaturedProject({
       </div>
     </div>
   );
-}
+};
 
-function SmallProject({ project, index }: { project: Project; index: number }) {
+const SmallProject = ({ project, index }: { project: Project; index: number }) => {
   const { ref, isVisible } = useScrollAnimation(0.1);
   const { isExpanded, contentRef, contentHeight, triggerProps } =
     useExpandable();
@@ -268,9 +268,9 @@ function SmallProject({ project, index }: { project: Project; index: number }) {
       </div>
     </div>
   );
-}
+};
 
-function ProjectFilterTabs({
+const ProjectFilterTabs = ({
   categories,
   activeCategory,
   onSelect,
@@ -278,55 +278,53 @@ function ProjectFilterTabs({
   categories: string[];
   activeCategory: string;
   onSelect: (cat: string) => void;
-}) {
-  return (
-    <div
-      className="flex flex-wrap gap-2 mb-12"
-      role="tablist"
-      aria-label="Filter projects by category"
-    >
-      {categories.map((cat) => (
-        <button
-          key={cat}
-          role="tab"
-          aria-selected={activeCategory === cat}
-          onClick={() => onSelect(cat)}
-          className={`px-4 py-2 text-sm font-mono rounded-lg border transition-all duration-300 ${
-            activeCategory === cat
-              ? "bg-accent text-bg border-accent"
-              : "border-border text-text-muted hover:border-accent/30 hover:text-accent bg-card/30"
-          }`}
-        >
-          {cat}
-        </button>
-      ))}
-    </div>
-  );
-}
+}) => (
+  <div
+    className="flex flex-wrap gap-2 mb-12"
+    role="tablist"
+    aria-label="Filter projects by category"
+  >
+    {categories.map((cat) => (
+      <button
+        key={cat}
+        role="tab"
+        aria-selected={activeCategory === cat}
+        onClick={() => onSelect(cat)}
+        className={`px-4 py-2 text-sm font-mono rounded-lg border transition-all duration-300 ${
+          activeCategory === cat
+            ? "bg-accent text-bg border-accent"
+            : "border-border text-text-muted hover:border-accent/30 hover:text-accent bg-card/30"
+        }`}
+      >
+        {cat}
+      </button>
+    ))}
+  </div>
+);
 
-export default function Projects({
+const Projects = ({
   projects,
   githubUrl,
 }: {
   projects: Project[];
   githubUrl?: string;
-}) {
+}) => {
   const { ref, isVisible } = useScrollAnimation();
   const [activeCategory, setActiveCategory] = useState("All");
   const [transitioning, setTransitioning] = useState(false);
 
   const categories = useMemo(() => {
-    const cats = new Set<string>();
-    projects.forEach((p) => {
-      cats.add(p.category || "Other");
-    });
+    const cats = new Set(projects.map((p) => p.category || "Other"));
     return ["All", ...Array.from(cats).sort()];
   }, [projects]);
 
-  const filteredProjects = useMemo(() => {
-    if (activeCategory === "All") return projects;
-    return projects.filter((p) => (p.category || "Other") === activeCategory);
-  }, [projects, activeCategory]);
+  const filteredProjects = useMemo(
+    () =>
+      activeCategory === "All"
+        ? projects
+        : projects.filter((p) => (p.category || "Other") === activeCategory),
+    [projects, activeCategory],
+  );
 
   const featured = filteredProjects.filter((p) => p.featured);
   const other = filteredProjects.filter((p) => !p.featured);
@@ -423,4 +421,6 @@ export default function Projects({
       </div>
     </section>
   );
-}
+};
+
+export default Projects;

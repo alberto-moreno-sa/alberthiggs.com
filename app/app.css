@@ -86,16 +86,6 @@ body {
   }
 }
 
-@keyframes preloader-fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
 /* ── Animation Utilities ── */
 .animate-scroll-indicator {
   animation: scroll-indicator 1.5s ease-in-out infinite;
@@ -171,15 +161,12 @@ body {
   transform: rotate(180deg);
 }
 
-/* ── Preloader ── */
+/* ── Spin Animations ── */
 .preloader-spin {
   animation: preloader-spin 20s linear infinite;
 }
 .preloader-spin-reverse {
   animation: preloader-spin 15s linear infinite reverse;
-}
-.preloader-fade-out {
-  animation: preloader-fade-out 0.5s ease-out forwards;
 }
 
 /* ── Taco Builder ── */

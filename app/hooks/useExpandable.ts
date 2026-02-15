@@ -14,7 +14,7 @@ interface ExpandableReturn {
   };
 }
 
-export function useExpandable(defaultExpanded = false): ExpandableReturn {
+export const useExpandable = (defaultExpanded = false): ExpandableReturn => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null!);
@@ -59,4 +59,4 @@ export function useExpandable(defaultExpanded = false): ExpandableReturn {
       tabIndex: 0,
     },
   };
-}
+};

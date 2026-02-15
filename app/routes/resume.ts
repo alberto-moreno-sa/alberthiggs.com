@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { ContentfulClient } from "~/lib/contentful";
 
-export async function loader({ context }: LoaderFunctionArgs) {
+export const loader = async ({ context }: LoaderFunctionArgs) => {
   const env = context.cloudflare.env as Env;
   const client = new ContentfulClient(
     env.CONTENTFUL_SPACE_ID,
@@ -27,4 +27,4 @@ export async function loader({ context }: LoaderFunctionArgs) {
       "Cache-Control": "public, max-age=3600, s-maxage=86400",
     },
   });
-}
+};
