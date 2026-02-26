@@ -38,10 +38,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <GoogleAnalytics gaTrackingId={data?.gaTrackingId} />
       </head>
       <body className="bg-bg text-text-primary antialiased">
         {children}
+        <GoogleAnalytics gaTrackingId={data?.gaTrackingId} />
         <ScrollRestoration />
         <Scripts />
       </body>
