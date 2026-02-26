@@ -108,12 +108,12 @@ const Hero = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
 
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
         {/* Section label */}
-        <div className="animate-fade-in-up">
+        <div>
           <span className="section-label">// home</span>
         </div>
 
-        {/* Name */}
-        <div className="animate-fade-in-up" style={{ animationDelay: "0.15s" }}>
+        {/* Name — no animation to avoid LCP render delay */}
+        <div>
           <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight leading-[0.9] font-mono mt-4">
             {firstName}
             <br />
@@ -124,7 +124,7 @@ const Hero = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
         {/* Title */}
         <div
           className="animate-fade-in-up"
-          style={{ animationDelay: "0.3s", animationFillMode: "both" }}
+          style={{ animationDelay: "0.15s", animationFillMode: "both" }}
         >
           <p className="mt-6 text-accent/70 font-mono text-sm sm:text-base tracking-wide">
             {personalInfo.title}
@@ -134,7 +134,7 @@ const Hero = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
         {/* Tagline */}
         <div
           className="animate-fade-in-up"
-          style={{ animationDelay: "0.4s", animationFillMode: "both" }}
+          style={{ animationDelay: "0.25s", animationFillMode: "both" }}
         >
           <p className="mt-6 text-text-secondary text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
             {personalInfo.heroTagline}
@@ -144,7 +144,7 @@ const Hero = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
         {/* CTA Buttons */}
         <div
           className="animate-fade-in-up"
-          style={{ animationDelay: "0.55s", animationFillMode: "both" }}
+          style={{ animationDelay: "0.4s", animationFillMode: "both" }}
         >
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <a
@@ -178,7 +178,7 @@ const Hero = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
         {/* Stats */}
         <div
           className="animate-fade-in-up"
-          style={{ animationDelay: "0.7s", animationFillMode: "both" }}
+          style={{ animationDelay: "0.55s", animationFillMode: "both" }}
         >
           <div
             ref={statsRef}
