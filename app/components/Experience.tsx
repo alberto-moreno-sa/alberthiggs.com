@@ -206,6 +206,8 @@ const ExperienceCard = ({
                 <img
                   src={`/asset/experience/${slugify(experience.company)}`}
                   alt={`${experience.company} website`}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-36 lg:h-40 object-cover object-top transition-transform duration-500 group-hover/preview:scale-105"
                   onError={() => setImgError(true)}
                 />
@@ -218,11 +220,7 @@ const ExperienceCard = ({
   );
 };
 
-const Experience = ({
-  experiences,
-}: {
-  experiences: ExperienceType[];
-}) => {
+const Experience = ({ experiences }: { experiences: ExperienceType[] }) => {
   const { ref, isVisible } = useScrollAnimation();
 
   return (

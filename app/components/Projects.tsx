@@ -30,21 +30,27 @@ const ProjectSlider = ({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
+  const rafRef = useRef(0);
   const handleScroll = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 0);
-    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+      setCanScrollLeft(el.scrollLeft > 0);
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    });
   };
 
   const scroll = (direction: "left" | "right") => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const cardWidth =
-      el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? 300;
-    el.scrollBy({
-      left: direction === "left" ? -(cardWidth + gap) : cardWidth + gap,
-      behavior: "smooth",
+    requestAnimationFrame(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+      const cardWidth =
+        el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? 300;
+      el.scrollBy({
+        left: direction === "left" ? -(cardWidth + gap) : cardWidth + gap,
+        behavior: "smooth",
+      });
     });
   };
 
@@ -127,6 +133,10 @@ const FeaturedProject = ({
           <img
             src={`/asset/project/${project.slug}`}
             alt={project.name}
+            width={760}
+            height={428}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         </div>

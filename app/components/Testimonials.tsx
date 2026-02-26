@@ -38,6 +38,10 @@ const TestimonialCard = ({
           <img
             src={`/asset/testimonial/${slugify(testimonial.name)}`}
             alt={testimonial.name}
+            width={80}
+            height={80}
+            loading="lazy"
+            decoding="async"
             className="w-10 h-10 rounded-full border border-accent/20 object-cover"
           />
         ) : (

@@ -27,8 +27,8 @@ function setSecurityHeaders(headers: Headers) {
     [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self'",
       "img-src 'self' data: https://images.ctfassets.net https://*.ctfassets.net",
       "connect-src 'self' https://cdn.contentful.com https://www.google-analytics.com https://www.googletagmanager.com",
       "frame-ancestors 'none'",

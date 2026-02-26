@@ -14,13 +14,32 @@ const VALID_CONTENT_TYPES = [
   "image/webp",
   "image/svg+xml",
   "image/gif",
+  "image/avif",
 ];
+
+const IMAGE_DEFAULTS: Record<string, { w: number; q: number }> = {
+  experience: { w: 600, q: 80 },
+  project: { w: 760, q: 80 },
+  testimonial: { w: 80, q: 80 },
+};
 
 const validateAssetUrl = (url: string) => {
   const parsed = new URL(url);
   if (parsed.protocol !== "https:" || !ALLOWED_HOSTS.includes(parsed.hostname)) {
     throw new Response("Invalid asset URL", { status: 400 });
   }
+};
+
+/** Append Contentful Images API params for resize + WebP conversion */
+const optimizeImageUrl = (url: string, type: string): string => {
+  const defaults = IMAGE_DEFAULTS[type];
+  if (!defaults) return url;
+
+  const optimized = new URL(url);
+  optimized.searchParams.set("fm", "webp");
+  optimized.searchParams.set("w", String(defaults.w));
+  optimized.searchParams.set("q", String(defaults.q));
+  return optimized.toString();
 };
 
 const resolveImageUrl = (
@@ -62,7 +81,8 @@ export const loader = async ({ params, context }: LoaderFunctionArgs) => {
 
   validateAssetUrl(imageUrl);
 
-  const response = await fetch(imageUrl, {
+  const optimizedUrl = optimizeImageUrl(imageUrl, type!);
+  const response = await fetch(optimizedUrl, {
     signal: AbortSignal.timeout(5000),
   });
   if (!response.ok) {
