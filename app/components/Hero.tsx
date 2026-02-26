@@ -35,7 +35,6 @@ const Hero = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
   const [firstName, ...rest] = personalInfo.name.split(" ");
   const lastName = rest.join(" ");
   const { ref: statsRef, isVisible: statsVisible } = useScrollAnimation(0.3);
-
   return (
     <section
       id="hero"
@@ -44,9 +43,9 @@ const Hero = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
       {/* Dot grid background */}
       <div className="absolute inset-0 bg-bg dot-grid" />
 
-      {/* Animated SVG circles */}
+      {/* Animated SVG circles — fixed so they stay visible on scroll */}
       <div
-        className="absolute right-[5%] top-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-[0.15] md:opacity-[0.2] pointer-events-none"
+        className="fixed right-[5%] top-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-[0.15] md:opacity-[0.2] pointer-events-none z-0"
         aria-hidden="true"
       >
         <svg className="w-full h-full preloader-spin" viewBox="0 0 500 500">
