@@ -249,7 +249,7 @@ const TacoBuilder = () => {
           <div className="mx-auto max-w-5xl px-6 w-full">
             {/* Section header */}
             <div className="absolute top-24 left-6 md:left-1/2 md:-translate-x-1/2 md:left-auto md:text-center">
-              <span className="section-label">// funFact</span>
+              <span className="section-label">// taco</span>
               <h2 className="text-3xl sm:text-4xl font-bold font-mono mt-2">
                 Build Your Taco
               </h2>
