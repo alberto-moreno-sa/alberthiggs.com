@@ -1,0 +1,7 @@
+# Security contact information for alberthiggs.com
+# https://www.rfc-editor.org/rfc/rfc9116
+
+Contact: mailto:security@albhiggs.com
+Expires: 2027-06-28T00:00:00.000Z
+Preferred-Languages: en, es
+Canonical: https://alberthiggs.com/.well-known/security.txt
