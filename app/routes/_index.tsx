@@ -12,6 +12,7 @@ import Contact from "~/components/Contact";
 import Testimonials from "~/components/Testimonials";
 import Footer from "~/components/Footer";
 import TacoBuilder from "~/components/TacoBuilder";
+import Survey from "~/components/Survey";
 
 export const loader = async ({ context }: LoaderFunctionArgs) => {
   const env = context.cloudflare.env as Env;
@@ -45,6 +46,7 @@ const Index = () => {
         <About personalInfo={data.personal} />
         <Experience experiences={data.experience} />
         <Projects projects={data.projects} githubUrl={data.personal.githubUrl} />
+        <Survey />
         <Skills skillCategories={data.skills} />
         <TacoBuilder />
         <Testimonials testimonials={data.testimonials} />
