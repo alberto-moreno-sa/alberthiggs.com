@@ -46,8 +46,8 @@ const Index = () => {
         <About personalInfo={data.personal} />
         <Experience experiences={data.experience} />
         <Projects projects={data.projects} githubUrl={data.personal.githubUrl} />
-        <Survey />
         <Skills skillCategories={data.skills} />
+        <Survey />
         <TacoBuilder />
         <Testimonials testimonials={data.testimonials} />
         <Contact personalInfo={data.personal} />
