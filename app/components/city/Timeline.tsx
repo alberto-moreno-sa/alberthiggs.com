@@ -97,7 +97,7 @@ export function Timeline({ count }: { count: number }) {
         type="button"
         style={button}
         onClick={() => cityStore.setPlaying(!playing)}
-        aria-label={playing ? 'Pausa' : 'Reproducir'}
+        aria-label={playing ? 'Pause' : 'Play'}
       >
         {playing ? '❚❚' : '▶'}
       </button>
@@ -131,7 +131,7 @@ export function Timeline({ count }: { count: number }) {
           }}
         />
       </div>
-      <span style={{ opacity: 0.5, fontSize: 11 }}>espacio · ← →</span>
+      <span style={{ opacity: 0.5, fontSize: 11 }}>space · ← →</span>
     </div>
   )
 }

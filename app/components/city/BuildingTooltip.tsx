@@ -54,26 +54,26 @@ export function BuildingTooltip() {
   return (
     <div style={{ ...panel, left, top }}>
       <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#fff' }}>
-        {b.t ?? 'Sin nombre'}
+        {b.t ?? 'Unnamed'}
       </div>
       <div style={row}>
-        <span style={key}>altura</span>
+        <span style={key}>height</span>
         <span>{b.h.toFixed(1)} m</span>
       </div>
       <div style={row}>
-        <span style={key}>pisos aprox.</span>
+        <span style={key}>floors approx.</span>
         <span>{floors}</span>
       </div>
       <div style={row}>
-        <span style={key}>huella</span>
+        <span style={key}>footprint</span>
         <span>{b.a.toLocaleString()} m²</span>
       </div>
       <div style={row}>
-        <span style={key}>uso</span>
+        <span style={key}>use</span>
         <span>{b.c ?? '—'}</span>
       </div>
       <div style={{ ...row, marginTop: 6, fontSize: 10, opacity: 0.55 }}>
-        <span>altura medida por LiDAR</span>
+        <span>height measured from LiDAR</span>
       </div>
     </div>
   )
