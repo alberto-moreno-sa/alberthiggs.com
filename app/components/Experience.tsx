@@ -4,6 +4,21 @@ import { useExpandable } from "~/hooks/useExpandable";
 import type { Experience as ExperienceType } from "~/lib/contentful";
 import { slugify } from "~/lib/slugify";
 
+/**
+ * Show just the host in the link label while the href keeps the full path.
+ *
+ * Some roles link to a specific page rather than a company homepage, and those
+ * URLs run long enough to break the card layout next to entries like
+ * "clip.mx". Falls back to the raw string if the URL will not parse.
+ */
+function displayHost(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  }
+}
+
 const ExperienceCard = ({
   experience,
   index,
@@ -152,7 +167,7 @@ const ExperienceCard = ({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 mt-5 text-xs text-text-muted hover:text-accent transition-colors font-mono"
                   >
-                    {experience.website.replace("https://", "")}
+                    {displayHost(experience.website)}
                     <svg
                       className="w-3 h-3"
                       fill="none"
@@ -190,7 +205,7 @@ const ExperienceCard = ({
               </div>
               {experience.website && (
                 <div className="flex-1 ml-1.5 px-2 py-0.5 rounded bg-bg/60 text-[9px] font-mono text-text-muted truncate">
-                  {experience.website.replace("https://", "")}
+                  {displayHost(experience.website)}
                 </div>
               )}
             </div>
