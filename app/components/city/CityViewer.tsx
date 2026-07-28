@@ -149,21 +149,14 @@ function Scene({ cache, index }: { cache: TileCache; index: CityIndex }) {
   // Free-flight keyboard navigation over the city.
   useFlightControls(cam, controlsRef);
 
-  // Frame timing and renderer counters, published a few times a second.
+  // Frame timing, published a few times a second.
   //
   // Measured from inside the loop because an external rAF probe stops firing
-  // whenever the tab is hidden. `autoReset` is turned off because useFrame runs
-  // *before* the render: with the default the counters would have just been
-  // cleared and would always read zero, so they are read here and reset by hand
-  // — the numbers therefore describe the previous frame, which is what we want.
+  // whenever the tab is hidden, so it would measure the throttling rather than
+  // the renderer. Geometry counts come from the tiles we built rather than
+  // three's own counters, which would need the renderer mutated to be readable
+  // from here — and we already know exactly what we put on screen.
   const perf = useRef({ frames: 0, since: 0 });
-  useEffect(() => {
-    gl.info.autoReset = false;
-    return () => {
-      gl.info.autoReset = true;
-    };
-  }, [gl]);
-
   useFrame(() => {
     const p = perf.current;
     const now = performance.now();
@@ -171,14 +164,28 @@ function Scene({ cache, index }: { cache: TileCache; index: CityIndex }) {
     p.frames++;
     const elapsed = now - p.since;
     if (elapsed >= 500) {
+      // Counted here rather than kept in a ref: this branch runs twice a
+      // second, so walking the ready tiles costs nothing and avoids mirroring
+      // render-time state into the frame loop.
+      let calls = 0;
+      let triangles = 0;
+      for (const e of cache.ready()) {
+        if (e.terrain) {
+          calls++;
+          triangles += (e.terrain.index?.count ?? 0) / 3;
+        }
+        if (e.buildings) {
+          calls++;
+          triangles += e.buildings.attributes.position.count / 3;
+        }
+      }
       cityStore.setFps(Math.round((p.frames * 1000) / elapsed), {
-        calls: gl.info.render.calls,
-        triangles: gl.info.render.triangles,
+        calls,
+        triangles,
       });
       p.frames = 0;
       p.since = now;
     }
-    gl.info.reset();
   });
 
   // Playback.
@@ -253,6 +260,7 @@ function Scene({ cache, index }: { cache: TileCache; index: CityIndex }) {
   });
 
   const tiles = cache.ready();
+
   const groupRef = useRef<Group>(null);
 
   // Rebuild the pickable list after each commit. Writing it during render would
