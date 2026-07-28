@@ -32,13 +32,14 @@ const MOVE_KEYS = new Set([
 /**
  * Fraction of the orbit distance travelled per second.
  *
- * Tuned by flying it: 0.55 crossed the whole 2 km of loaded city in two
- * seconds, which overshoots before you can see where you are going. At 0.15 a
- * held key moves about a block per second from the default altitude, and Shift
- * is there when you do want to cover ground.
+ * Scaling with distance keeps the same key usable at street level and at
+ * corridor scale, but it needs a floor: zoomed in close the fraction alone
+ * crawls, which reads as broken rather than precise.
  */
-const BASE_SPEED = 0.15;
-const ROTATE_SPEED = 1.1; // radians per second
+const BASE_SPEED = 0.4;
+/** Metres per second below which movement stops feeling like movement. */
+const MIN_SPEED = 45;
+const ROTATE_SPEED = 1.4; // radians per second
 const BOOST = 3;
 const MIN_PITCH = 0.05;
 const MAX_PITCH = Math.PI / 2 - 0.05;
@@ -92,11 +93,8 @@ export function useFlightControls(
     const { forward, right, offset } = scratch.current;
     const target = controls.target;
     const distance = camera.position.distanceTo(target);
-    const step =
-      BASE_SPEED *
-      distance *
-      dt *
-      (k.has("ShiftLeft") || k.has("ShiftRight") ? BOOST : 1);
+    const boost = k.has("ShiftLeft") || k.has("ShiftRight") ? BOOST : 1;
+    const step = Math.max(BASE_SPEED * distance, MIN_SPEED) * dt * boost;
 
     // Ground-plane basis from the current view direction. Z is up here, so the
     // forward vector is flattened before use — otherwise looking down would
