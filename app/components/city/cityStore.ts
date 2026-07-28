@@ -6,69 +6,92 @@
  * hook subscribes to one slice and the setters early-return when nothing
  * actually changed.
  */
-import { useSyncExternalStore } from 'react'
-import type { Building } from './tileLoader'
+import { useSyncExternalStore } from "react";
+import type { Building } from "./tileLoader";
 
 export interface HoverTarget {
-  building: Building
+  building: Building;
   /** projected position, for the tooltip */
-  screen: { x: number; y: number }
+  screen: { x: number; y: number };
 }
 
-type Listener = () => void
+type Listener = () => void;
 
-let station = 0
-let playing = false
-let hover: HoverTarget | null = null
+let station = 0;
+let playing = false;
+let hover: HoverTarget | null = null;
+let fps = 0;
+let drawInfo = { calls: 0, triangles: 0 };
 
-const listeners = new Set<Listener>()
+const listeners = new Set<Listener>();
 
 const emit = () => {
-  for (const l of listeners) l()
-}
+  for (const l of listeners) l();
+};
 
 const subscribe = (l: Listener): (() => void) => {
-  listeners.add(l)
+  listeners.add(l);
   return () => {
-    listeners.delete(l)
-  }
-}
+    listeners.delete(l);
+  };
+};
 
 export const cityStore = {
   getStation: () => station,
   setStation(n: number) {
-    if (n === station) return
-    station = n
-    emit()
+    if (n === station) return;
+    station = n;
+    emit();
   },
   isPlaying: () => playing,
   setPlaying(v: boolean) {
-    if (v === playing) return
-    playing = v
-    emit()
+    if (v === playing) return;
+    playing = v;
+    emit();
   },
+  getFps: () => fps,
+  /** Published from the render loop a few times a second, not per frame. */
+  setFps(v: number, info: { calls: number; triangles: number }) {
+    if (v === fps && info.calls === drawInfo.calls) return;
+    fps = v;
+    drawInfo = info;
+    emit();
+  },
+  getDrawInfo: () => drawInfo,
   getHover: () => hover,
   setHover(next: HoverTarget | null) {
     const same =
       (next === null && hover === null) ||
-      (next !== null && hover !== null && next.building === hover.building &&
-        next.screen.x === hover.screen.x && next.screen.y === hover.screen.y)
-    if (same) return
-    hover = next
-    emit()
+      (next !== null &&
+        hover !== null &&
+        next.building === hover.building &&
+        next.screen.x === hover.screen.x &&
+        next.screen.y === hover.screen.y);
+    if (same) return;
+    hover = next;
+    emit();
   },
   subscribe,
-}
+};
 
-const serverStation = () => 0
-const serverPlaying = () => false
-const serverHover = (): HoverTarget | null => null
+const serverStation = () => 0;
+const serverPlaying = () => false;
+const serverHover = (): HoverTarget | null => null;
 
 export const useStation = (): number =>
-  useSyncExternalStore(subscribe, cityStore.getStation, serverStation)
+  useSyncExternalStore(subscribe, cityStore.getStation, serverStation);
 
 export const usePlaying = (): boolean =>
-  useSyncExternalStore(subscribe, cityStore.isPlaying, serverPlaying)
+  useSyncExternalStore(subscribe, cityStore.isPlaying, serverPlaying);
 
 export const useHover = (): HoverTarget | null =>
-  useSyncExternalStore(subscribe, cityStore.getHover, serverHover)
+  useSyncExternalStore(subscribe, cityStore.getHover, serverHover);
+
+const serverFps = () => 0;
+export const useFps = (): number =>
+  useSyncExternalStore(subscribe, cityStore.getFps, serverFps);
+
+const EMPTY_DRAW = { calls: 0, triangles: 0 };
+const serverDraw = () => EMPTY_DRAW;
+export const useDrawInfo = (): { calls: number; triangles: number } =>
+  useSyncExternalStore(subscribe, cityStore.getDrawInfo, serverDraw);

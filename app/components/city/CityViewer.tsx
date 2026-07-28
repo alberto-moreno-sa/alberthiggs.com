@@ -149,6 +149,38 @@ function Scene({ cache, index }: { cache: TileCache; index: CityIndex }) {
   // Free-flight keyboard navigation over the city.
   useFlightControls(cam, controlsRef);
 
+  // Frame timing and renderer counters, published a few times a second.
+  //
+  // Measured from inside the loop because an external rAF probe stops firing
+  // whenever the tab is hidden. `autoReset` is turned off because useFrame runs
+  // *before* the render: with the default the counters would have just been
+  // cleared and would always read zero, so they are read here and reset by hand
+  // — the numbers therefore describe the previous frame, which is what we want.
+  const perf = useRef({ frames: 0, since: 0 });
+  useEffect(() => {
+    gl.info.autoReset = false;
+    return () => {
+      gl.info.autoReset = true;
+    };
+  }, [gl]);
+
+  useFrame(() => {
+    const p = perf.current;
+    const now = performance.now();
+    if (p.since === 0) p.since = now;
+    p.frames++;
+    const elapsed = now - p.since;
+    if (elapsed >= 500) {
+      cityStore.setFps(Math.round((p.frames * 1000) / elapsed), {
+        calls: gl.info.render.calls,
+        triangles: gl.info.render.triangles,
+      });
+      p.frames = 0;
+      p.since = now;
+    }
+    gl.info.reset();
+  });
+
   // Playback.
   const acc = useRef(0);
   useFrame((_, dt) => {
