@@ -38,8 +38,10 @@
   --color-border: #222222;
   --color-border-light: #333333;
   --color-text-primary: #e5e5e5;
-  --color-text-secondary: #999999;
-  --color-text-muted: #777777;
+  --color-text-secondary: #999999; /* 6.95:1 on --color-bg */
+  /* Was #777777 — 4.42:1, just under the 4.5:1 AA floor, and used for section
+     labels, dates, footer and hero stat labels. #808080 is 5.01:1. */
+  --color-text-muted: #808080;
 
   /* Cyan accent */
   --color-accent: #66d9ed;
@@ -56,6 +58,9 @@ html {
   scroll-behavior: smooth;
   background-color: var(--color-bg);
   color: var(--color-text-primary);
+  /* The nav is fixed, so anchor targets would land underneath it — hiding the
+     section heading and any element that just received focus (WCAG 2.4.11). */
+  scroll-padding-top: 5rem;
 }
 
 body {
@@ -67,6 +72,27 @@ body {
 ::selection {
   background-color: var(--color-accent);
   color: var(--color-bg);
+}
+
+/* ── Skip link ──
+   Off-screen until focused, rather than display:none, so it stays reachable
+   by keyboard and is announced by screen readers. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0 0 0.5rem 0;
+}
+
+.skip-link:focus {
+  left: 0;
 }
 
 /* ── Scrollbar ── */

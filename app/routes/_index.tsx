@@ -58,7 +58,7 @@ const Index = () => {
   return (
     <div className="relative">
       <Navbar />
-      <main>
+      <main id="main-content">
         <Hero personalInfo={data.personal} />
         <About personalInfo={data.personal} />
         <Experience experiences={data.experience} />

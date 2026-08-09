@@ -9,6 +9,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import { usePrefersReducedMotion } from "~/hooks/usePrefersReducedMotion";
 import {
   DoubleSide,
   Group,
@@ -92,6 +93,7 @@ function Scene({ cache, index }: { cache: TileCache; index: CityIndex }) {
 
   const station = useStation();
   const playing = usePlaying();
+  const reducedMotion = usePrefersReducedMotion();
   const [, force] = useState(0);
 
   // Local scene origin: the first station. Keeping world coordinates (millions
@@ -283,8 +285,11 @@ function Scene({ cache, index }: { cache: TileCache; index: CityIndex }) {
       <directionalLight position={[700, 500, 400]} intensity={0.45} />
       <OrbitControls
         ref={controlsRef as never}
-        enableDamping
-        dampingFactor={0.09}
+        // Damping keeps the camera gliding after the pointer stops — motion the
+        // user did not ask for. The flyover itself is the point of the widget
+        // and is always user-initiated, so only the inertia is dropped here.
+        enableDamping={!reducedMotion}
+        dampingFactor={reducedMotion ? 0 : 0.09}
         enablePan
         screenSpacePanning={false}
         minDistance={60}
@@ -354,7 +359,14 @@ export default function CityViewer() {
   }
 
   return (
-    <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
+    <div
+      style={{ position: "absolute", inset: 0, overflow: "hidden" }}
+      // A bare <canvas> is announced as nothing at all. The surrounding copy in
+      // Survey.tsx carries the equivalent information, so this is labelled as a
+      // supplementary visual tool rather than given a full text alternative.
+      role="img"
+      aria-label="Interactive 3D flyover of Paseo de la Reforma, Mexico City, built from LiDAR elevation data. A visual exploration tool; the surrounding text describes the same project."
+    >
       <Canvas
         dpr={[1, MAX_DPR]}
         gl={{ antialias: true }}

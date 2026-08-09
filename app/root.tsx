@@ -40,6 +40,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-bg text-text-primary antialiased">
+        {/* WCAG 2.4.1 — without this, reaching the content by keyboard means
+            tabbing past 8 nav links and the menu button on every page. */}
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
         {children}
         <GoogleAnalytics gaTrackingId={data?.gaTrackingId} />
         <ScrollRestoration />

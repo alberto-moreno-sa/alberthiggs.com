@@ -96,7 +96,7 @@ const Navbar = () => {
                     : "text-text-secondary hover:text-text-primary"
                 }`}
               >
-                <span className="font-mono text-[10px] text-accent/40 mr-1">
+                <span className="font-mono text-[10px] text-accent/60 mr-1">
                   {link.num}.
                 </span>
                 {link.label}
@@ -119,6 +119,8 @@ const Navbar = () => {
           onClick={() => setMobileOpen(!mobileOpen)}
           className="md:hidden flex flex-col gap-1.5 p-2"
           aria-label="Toggle menu"
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-menu"
         >
           <span
             className={`w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center ${
@@ -138,8 +140,11 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — collapsed with max-height rather than unmounted, so the
+          links inside must be taken out of the tab order explicitly. */}
       <div
+        id="mobile-menu"
+        aria-hidden={!mobileOpen}
         className={`md:hidden glass border-b border-border/50 overflow-hidden transition-all duration-300 ${
           mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
@@ -151,6 +156,7 @@ const Navbar = () => {
               <a
                 key={link.href}
                 href={link.href}
+                tabIndex={mobileOpen ? 0 : -1}
                 onClick={(e) => {
                   scrollTo(e, sectionId);
                   setMobileOpen(false);
@@ -162,7 +168,7 @@ const Navbar = () => {
                     : "text-text-secondary hover:text-text-primary"
                 }`}
               >
-                <span className="font-mono text-[10px] text-accent/40 mr-2">
+                <span className="font-mono text-[10px] text-accent/60 mr-2">
                   {link.num}.
                 </span>
                 {link.label}
@@ -173,6 +179,7 @@ const Navbar = () => {
             href="/resume"
             target="_blank"
             rel="noopener noreferrer"
+            tabIndex={mobileOpen ? 0 : -1}
             onClick={() => {
               setMobileOpen(false);
               trackResumeDownload();
