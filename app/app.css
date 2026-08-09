@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Claude Code skills/agents are tracked in git, so Tailwind's automatic source
+   detection would scan their markdown and emit utilities for any prose word
+   that happens to be a valid class name ("block", "fixed", "grid", ...). */
+@source not "../.claude";
+
 /* ── Self-hosted fonts ── */
 @font-face {
   font-family: "Inter";

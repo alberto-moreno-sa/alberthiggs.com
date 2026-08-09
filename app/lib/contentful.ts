@@ -82,17 +82,43 @@ const ALL_SECTIONS_QUERY = `{
   }
 }`;
 
+/**
+ * Isolate-level memo of the parsed site data.
+ *
+ * `/asset/:type/:slug` calls getAllData() just to look up one image URL, so a
+ * cold page render can run this query once per image on top of the document
+ * loader. Cloudflare already edge-caches the GraphQL response (cacheTtl below)
+ * and the asset responses themselves, so this is not a per-visitor cost — but
+ * within a single isolate it still means re-fetching and re-parsing the whole
+ * payload N times. Keyed by space so a config change can't serve stale data.
+ */
+const MEMO_TTL_MS = 60_000;
+let memo: { key: string; expires: number; data: SiteData } | null = null;
+
 // Client — single GraphQL query for all sections
 export class ContentfulClient {
   private graphqlUrl: string;
   private accessToken: string;
+  private spaceId: string;
 
   constructor(spaceId: string, accessToken: string) {
+    this.spaceId = spaceId;
     this.accessToken = accessToken;
     this.graphqlUrl = `https://graphql.contentful.com/content/v1/spaces/${spaceId}/environments/master`;
   }
 
   async getAllData(): Promise<SiteData> {
+    const now = Date.now();
+    if (memo && memo.key === this.spaceId && memo.expires > now) {
+      return memo.data;
+    }
+
+    const data = await this.fetchAllData();
+    memo = { key: this.spaceId, expires: now + MEMO_TTL_MS, data };
+    return data;
+  }
+
+  private async fetchAllData(): Promise<SiteData> {
     console.log("[Contentful] Fetching via GraphQL");
     const res = await fetch(this.graphqlUrl, {
       method: "POST",
@@ -104,7 +130,10 @@ export class ContentfulClient {
       cf: { cacheTtl: 3600, cacheEverything: true },
     });
 
-    console.log("[Contentful] cf-cache-status:", res.headers.get("cf-cache-status"));
+    console.log(
+      "[Contentful] cf-cache-status:",
+      res.headers.get("cf-cache-status"),
+    );
 
     if (!res.ok) {
       throw new Error(`Contentful GraphQL error: ${res.status}`);

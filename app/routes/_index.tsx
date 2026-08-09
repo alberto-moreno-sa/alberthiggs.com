@@ -1,5 +1,9 @@
 import { useEffect } from "react";
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare";
+import {
+  json,
+  type HeadersFunction,
+  type LoaderFunctionArgs,
+} from "@remix-run/cloudflare";
 import { useLoaderData, useLocation } from "@remix-run/react";
 import { ContentfulClient } from "~/lib/contentful";
 import Navbar from "~/components/Navbar";
@@ -25,6 +29,19 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
   return json(siteData);
 };
 
+/**
+ * Serve the rendered document from Cloudflare's edge cache.
+ *
+ * Content only changes when Contentful is edited, so there is no reason to
+ * re-invoke the Worker (fetch + SSR) on every visit. `max-age=0` keeps the
+ * browser revalidating while `s-maxage` lets the edge answer directly;
+ * `stale-while-revalidate` means a CMS edit never makes a visitor wait.
+ */
+export const headers: HeadersFunction = () => ({
+  "Cache-Control":
+    "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+});
+
 const Index = () => {
   const data = useLoaderData<typeof loader>();
   const { hash } = useLocation();
@@ -45,7 +62,10 @@ const Index = () => {
         <Hero personalInfo={data.personal} />
         <About personalInfo={data.personal} />
         <Experience experiences={data.experience} />
-        <Projects projects={data.projects} githubUrl={data.personal.githubUrl} />
+        <Projects
+          projects={data.projects}
+          githubUrl={data.personal.githubUrl}
+        />
         <Skills skillCategories={data.skills} />
         <Survey />
         <TacoBuilder />

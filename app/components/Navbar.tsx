@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { trackNavClick, trackResumeDownload } from "~/lib/analytics";
 
 const navLinks = [
@@ -9,8 +9,11 @@ const navLinks = [
   { label: "Reforma", href: "#reforma", num: "05" },
   { label: "Taco", href: "#taco", num: "06" },
   { label: "Testimonials", href: "#testimonials", num: "07" },
-  { label: "Contact", href: "#contact", num: "08" }
+  { label: "Contact", href: "#contact", num: "08" },
 ];
+
+/** Static — derived once at module load, not on every scroll event. */
+const sectionIds = navLinks.map((l) => l.href.replace("#", ""));
 
 const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
   e.preventDefault();
@@ -21,23 +24,36 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
-    const handleScroll = () => {
+    // Batch the layout reads into one rAF per frame — the raw scroll event can
+    // fire far more often than that, and each pass calls getBoundingClientRect
+    // on up to 8 sections. Same pattern as useScrollProgress.
+    const update = () => {
       setScrolled(window.scrollY > 50);
 
-      const sections = navLinks.map((l) => l.href.replace("#", ""));
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i]);
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionIds[i]);
         if (el && el.getBoundingClientRect().top <= 120) {
-          setActiveSection(sections[i]);
+          setActiveSection(sectionIds[i]);
           break;
         }
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update(); // initial check
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   return (
