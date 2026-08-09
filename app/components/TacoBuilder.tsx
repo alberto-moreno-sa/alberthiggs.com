@@ -55,7 +55,9 @@ const getLayerOpacity = (progress: number, threshold: number): number =>
   progress < threshold ? 0 : Math.min(1, (progress - threshold) / 0.15);
 
 const getLayerTranslateY = (progress: number, threshold: number): number =>
-  progress < threshold ? 20 : Math.max(0, 20 * (1 - (progress - threshold) / 0.15));
+  progress < threshold
+    ? 20
+    : Math.max(0, 20 * (1 - (progress - threshold) / 0.15));
 
 const TacoVisual = ({ progress }: { progress: number }) => {
   const isComplete = progress >= 0.95;

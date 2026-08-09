@@ -72,8 +72,8 @@ const Survey = () => {
           </h2>
           <p className="mt-4 max-w-2xl text-text-secondary">
             Building footprints are widely available; their heights are not —
-            only 7% of the buildings along Reforma carry one. So I measured them:
-            every footprint is rasterised against INEGI&apos;s 1.5 m LiDAR
+            only 7% of the buildings along Reforma carry one. So I measured
+            them: every footprint is rasterised against INEGI&apos;s 1.5 m LiDAR
             surface and terrain models, giving a height for 99.5% of them. The
             towers come out within a few metres of their published figures. The
             viewer streams the city as 50 KB tiles through a memory-bounded LRU

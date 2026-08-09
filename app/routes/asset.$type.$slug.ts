@@ -25,7 +25,10 @@ const IMAGE_DEFAULTS: Record<string, { w: number; q: number }> = {
 
 const validateAssetUrl = (url: string) => {
   const parsed = new URL(url);
-  if (parsed.protocol !== "https:" || !ALLOWED_HOSTS.includes(parsed.hostname)) {
+  if (
+    parsed.protocol !== "https:" ||
+    !ALLOWED_HOSTS.includes(parsed.hostname)
+  ) {
     throw new Response("Invalid asset URL", { status: 400 });
   }
 };

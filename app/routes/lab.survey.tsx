@@ -44,8 +44,8 @@ export default function LabSurvey() {
       <p className="pointer-events-none absolute left-4 top-14 z-20 max-w-[15rem] font-mono text-[10px] leading-relaxed text-white/30">
         Elevation data — Fuente: INEGI, Modelos Digitales de Elevación de alta
         resolución LiDAR 1.5 m (superficie y terreno), sheets E14A39 B1–B4, 2020
-        edition. Building footprints © Overture Maps Foundation / © OpenStreetMap
-        contributors (ODbL).
+        edition. Building footprints © Overture Maps Foundation / ©
+        OpenStreetMap contributors (ODbL).
       </p>
     </div>
   );

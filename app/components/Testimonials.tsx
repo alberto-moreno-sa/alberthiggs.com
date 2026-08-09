@@ -98,7 +98,7 @@ const TestimonialCard = ({
     </a>
   ) : (
     <div
-      ref={ref}
+      ref={ref as React.RefObject<HTMLDivElement>}
       className={cardClass}
       style={{ transitionDelay: `${index * 120}ms` }}
     >
@@ -107,11 +107,7 @@ const TestimonialCard = ({
   );
 };
 
-const Testimonials = ({
-  testimonials,
-}: {
-  testimonials: Testimonial[];
-}) => {
+const Testimonials = ({ testimonials }: { testimonials: Testimonial[] }) => {
   const { ref, isVisible } = useScrollAnimation();
 
   if (testimonials.length === 0) return null;

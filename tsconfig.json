@@ -10,7 +10,11 @@
   "exclude": ["functions", "node_modules", "build"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["@remix-run/cloudflare", "vite/client", "@cloudflare/workers-types"],
+    "types": [
+      "@remix-run/cloudflare",
+      "vite/client",
+      "@cloudflare/workers-types"
+    ],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",

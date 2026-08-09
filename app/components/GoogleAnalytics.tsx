@@ -8,7 +8,11 @@ const GA_ID_PATTERN = /^(G|UA)-[A-Z0-9-]+$/i;
  * Deferred GA4 loader — injects gtag.js only after the page is idle,
  * avoiding render-blocking and improving Lighthouse performance scores.
  */
-export const GoogleAnalytics = ({ gaTrackingId }: { gaTrackingId?: string }) => {
+export const GoogleAnalytics = ({
+  gaTrackingId,
+}: {
+  gaTrackingId?: string;
+}) => {
   const location = useLocation();
   const [loaded, setLoaded] = useState(false);
 

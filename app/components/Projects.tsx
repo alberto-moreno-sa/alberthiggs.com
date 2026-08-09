@@ -4,14 +4,34 @@ import { useExpandable } from "~/hooks/useExpandable";
 import type { Project } from "~/lib/contentful";
 
 const ChevronLeft = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+  <svg
+    className={className}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15.75 19.5 8.25 12l7.5-7.5"
+    />
   </svg>
 );
 
 const ChevronRight = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+  <svg
+    className={className}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="m8.25 4.5 7.5 7.5-7.5 7.5"
+    />
   </svg>
 );
 
@@ -205,7 +225,9 @@ const FeaturedProject = ({
         </h3>
 
         {/* Description */}
-        <p className={`text-text-secondary text-sm leading-relaxed mb-4 ${!isExpanded ? "line-clamp-3 min-h-[4.875em]" : ""}`}>
+        <p
+          className={`text-text-secondary text-sm leading-relaxed mb-4 ${!isExpanded ? "line-clamp-3 min-h-[4.875em]" : ""}`}
+        >
           {isExpanded ? project.longDescription : project.shortDescription}
         </p>
 
@@ -303,7 +325,13 @@ const FeaturedProject = ({
   );
 };
 
-const SmallProject = ({ project, index }: { project: Project; index: number }) => {
+const SmallProject = ({
+  project,
+  index,
+}: {
+  project: Project;
+  index: number;
+}) => {
   const { isExpanded, contentRef, contentHeight, triggerProps } =
     useExpandable();
 
@@ -503,7 +531,11 @@ const Projects = ({
           {/* Featured projects slider */}
           {featured.length > 0 && (
             <div className="mb-10 md:mb-16">
-              <ProjectSlider label="Featured" gap={24} showControls={featured.length > 2}>
+              <ProjectSlider
+                label="Featured"
+                gap={24}
+                showControls={featured.length > 2}
+              >
                 {featured.map((project, i) => (
                   <div
                     key={project.slug}
@@ -518,7 +550,11 @@ const Projects = ({
 
           {/* Other projects slider */}
           {other.length > 0 && (
-            <ProjectSlider label="Other Projects" gap={16} showControls={other.length > 3}>
+            <ProjectSlider
+              label="Other Projects"
+              gap={16}
+              showControls={other.length > 3}
+            >
               {other.map((project, i) => (
                 <div
                   key={project.slug}

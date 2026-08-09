@@ -132,15 +132,15 @@ gh release create v1.0.0 --generate-notes
 
 Set these in your repo under **Settings → Secrets and variables → Actions**:
 
-| Secret                   | Description                          |
-| ------------------------ | ------------------------------------ |
-| `CLOUDFLARE_API_TOKEN`   | Cloudflare API token with Pages edit |
-| `CLOUDFLARE_ACCOUNT_ID`  | Your Cloudflare account ID           |
+| Secret                  | Description                          |
+| ----------------------- | ------------------------------------ |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token with Pages edit |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID           |
 
 Set these in your **Cloudflare Pages** project environment variables:
 
-| Variable                   | Description                |
-| -------------------------- | -------------------------- |
-| `CONTENTFUL_SPACE_ID`      | Contentful space ID        |
-| `CONTENTFUL_ACCESS_TOKEN`  | Contentful delivery token  |
-| `GA_MEASUREMENT_ID`        | Google Analytics 4 ID      |
+| Variable                  | Description               |
+| ------------------------- | ------------------------- |
+| `CONTENTFUL_SPACE_ID`     | Contentful space ID       |
+| `CONTENTFUL_ACCESS_TOKEN` | Contentful delivery token |
+| `GA_MEASUREMENT_ID`       | Google Analytics 4 ID     |

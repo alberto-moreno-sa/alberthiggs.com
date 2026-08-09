@@ -5,7 +5,28 @@ on:
     branches: [main]
 
 jobs:
+  # Quality gate. Everything downstream depends on this, so a red typecheck or
+  # lint never reaches production — and never cuts a release tag either.
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run build
+
   release:
+    needs: verify
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -35,7 +56,7 @@ jobs:
         run: gh release create ${{ steps.tag.outputs.next }} --generate-notes
 
   deploy:
-    needs: release
+    needs: [verify, release]
     runs-on: ubuntu-latest
     environment: production
     permissions:

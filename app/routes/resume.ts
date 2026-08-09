@@ -21,7 +21,10 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
   }
 
   const parsed = new URL(personal.resumeUrl);
-  if (parsed.protocol !== "https:" || !ALLOWED_HOSTS.includes(parsed.hostname)) {
+  if (
+    parsed.protocol !== "https:" ||
+    !ALLOWED_HOSTS.includes(parsed.hostname)
+  ) {
     throw new Response("Invalid resume URL", { status: 400 });
   }
 

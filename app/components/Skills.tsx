@@ -155,11 +155,7 @@ const SkillCard = ({
   );
 };
 
-const Skills = ({
-  skillCategories,
-}: {
-  skillCategories: SkillCategory[];
-}) => {
+const Skills = ({ skillCategories }: { skillCategories: SkillCategory[] }) => {
   const { ref, isVisible } = useScrollAnimation();
 
   return (
