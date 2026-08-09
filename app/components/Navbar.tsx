@@ -6,10 +6,10 @@ const navLinks = [
   { label: "Experience", href: "#experience", num: "02" },
   { label: "Projects", href: "#projects", num: "03" },
   { label: "Skills", href: "#skills", num: "04" },
-  { label: "Reforma", href: "#reforma", num: "06" },
-  { label: "Taco", href: "#taco", num: "07" },
-  { label: "Testimonials", href: "#testimonials", num: "08" },
-  { label: "Contact", href: "#contact", num: "09" },
+  { label: "Reforma", href: "#reforma", num: "05" },
+  { label: "Taco", href: "#taco", num: "06" },
+  { label: "Testimonials", href: "#testimonials", num: "07" },
+  { label: "Contact", href: "#contact", num: "08" },
 ];
 
 const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
