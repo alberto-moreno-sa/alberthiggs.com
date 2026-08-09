@@ -52,6 +52,8 @@ const MB = 1024 * 1024;
 
 /** Render the 3 m height grid every other post — 6 m ground, a quarter the vertices. */
 const TERRAIN_STRIDE = 2;
+/** Per-tile network deadline. Tiles are ~50 KB, so this is generous. */
+const TILE_TIMEOUT_MS = 15_000;
 
 function geometryBytes(g?: BufferGeometry): number {
   if (!g) return 0;
@@ -143,6 +145,14 @@ export class TileCache {
 
     const controller = new AbortController();
     this.aborts.set(key, controller);
+    // Without a deadline a stalled response holds its concurrency slot forever;
+    // CONCURRENCY of those and the prefetch queue never drains again. Using a
+    // timer rather than AbortSignal.any keeps this working on older Safari.
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, TILE_TIMEOUT_MS);
     this.entries.set(key, {
       tx,
       ty,
@@ -186,17 +196,29 @@ export class TileCache {
           this.emit({ type: "soft-warn", key });
         }
       } catch (err) {
-        if ((err as Error).name === "AbortError") {
+        // `err` is unknown under strict mode; a rejection is not guaranteed to
+        // be an Error, and reading .message off a string yields undefined.
+        const name = err instanceof Error ? err.name : "";
+        const message = err instanceof Error ? err.message : String(err);
+
+        // A deliberate cancel (clear//evict) just drops the entry, but a
+        // timeout is a real failure and should surface.
+        if (name === "AbortError" && !timedOut) {
           this.entries.delete(key);
           return;
         }
+        const detail = timedOut
+          ? `Tile ${key} timed out after ${TILE_TIMEOUT_MS}ms`
+          : message;
+
         const entry = this.entries.get(key);
         if (entry) {
           entry.status = "error";
-          entry.error = (err as Error).message;
+          entry.error = detail;
         }
-        this.emit({ type: "error", key, detail: (err as Error).message });
+        this.emit({ type: "error", key, detail });
       } finally {
+        clearTimeout(timeoutId);
         this.inflight.delete(key);
         this.aborts.delete(key);
       }
@@ -262,6 +284,11 @@ export class TileCache {
         e.lastAccess = performance.now();
         continue;
       }
+      // Already downloading from an earlier prefetch window. load() dedupes the
+      // request, but taking a slot for it would shrink the real parallelism
+      // available to genuinely new tiles — prefetch windows overlap on every
+      // station change, so this happens constantly.
+      if (this.inflight.has(key)) continue;
       this.active++;
       void this.load(tx, ty).finally(() => {
         this.active--;

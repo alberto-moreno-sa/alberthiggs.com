@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef } from "react";
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import { useExpandable } from "~/hooks/useExpandable";
-import type { Project } from "~/lib/contentful";
+import type { ResolvedProject } from "~/lib/contentful";
 
 const ChevronLeft = ({ className }: { className?: string }) => (
   <svg
@@ -136,7 +136,7 @@ const FeaturedProject = ({
   project,
   index,
 }: {
-  project: Project;
+  project: ResolvedProject;
   index: number;
 }) => {
   const { isExpanded, contentRef, contentHeight, triggerProps } =
@@ -329,7 +329,7 @@ const SmallProject = ({
   project,
   index,
 }: {
-  project: Project;
+  project: ResolvedProject;
   index: number;
 }) => {
   const { isExpanded, contentRef, contentHeight, triggerProps } =
@@ -470,7 +470,7 @@ const Projects = ({
   projects,
   githubUrl,
 }: {
-  projects: Project[];
+  projects: ResolvedProject[];
   githubUrl?: string;
 }) => {
   const { ref, isVisible } = useScrollAnimation();
@@ -478,7 +478,7 @@ const Projects = ({
   const [transitioning, setTransitioning] = useState(false);
 
   const categories = useMemo(() => {
-    const cats = new Set(projects.map((p) => p.category || "Other"));
+    const cats = new Set(projects.map((p) => p.category));
     return ["All", ...Array.from(cats).sort()];
   }, [projects]);
 
@@ -486,7 +486,7 @@ const Projects = ({
     () =>
       activeCategory === "All"
         ? projects
-        : projects.filter((p) => (p.category || "Other") === activeCategory),
+        : projects.filter((p) => p.category === activeCategory),
     [projects, activeCategory],
   );
 
