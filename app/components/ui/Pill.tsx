@@ -1,3 +1,5 @@
+import { cn } from "~/lib/cn";
+
 /**
  * Small inline tag — technology chips, category badges, the "Featured" marker.
  *
@@ -32,7 +34,12 @@ export const Pill = ({
   children: React.ReactNode;
 }) => (
   <span
-    className={`${SIZE[size]} font-mono rounded border ${TONE[tone]} ${className}`}
+    className={cn(
+      SIZE[size],
+      "font-mono rounded border",
+      TONE[tone],
+      className,
+    )}
   >
     {children}
   </span>

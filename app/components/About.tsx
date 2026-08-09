@@ -1,6 +1,7 @@
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import type { PersonalInfo } from "~/lib/contentful";
 import { SectionHeader } from "~/components/ui/SectionHeader";
+import { cn } from "~/lib/cn";
 
 const About = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
   const { ref, isVisible } = useScrollAnimation();
@@ -9,7 +10,10 @@ const About = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
     <section id="about" className="relative py-24 overflow-hidden">
       <div
         ref={ref}
-        className={`relative mx-auto max-w-4xl px-6 ${isVisible ? "scroll-visible" : "scroll-hidden"}`}
+        className={cn(
+          "relative mx-auto max-w-4xl px-6",
+          isVisible ? "scroll-visible" : "scroll-hidden",
+        )}
       >
         {/* Section header */}
         <SectionHeader label="about" title="About Me" animate={false} />

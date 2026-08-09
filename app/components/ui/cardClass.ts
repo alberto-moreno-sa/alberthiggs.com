@@ -9,7 +9,12 @@
  *
  * Exposed as a function, not just a component, because some cards render as an
  * <a> and need the classes on an element they own.
+ *
+ * Composed with `cn`, so a caller passing `className` genuinely overrides the
+ * defaults instead of depending on stylesheet order — `cardClass({ className:
+ * "rounded-none" })` drops the rounded-xl rather than emitting both.
  */
+import { cn } from "~/lib/cn";
 
 /** `raised` is the primary surface; `sunken` sits back for secondary content. */
 export type CardTone = "raised" | "sunken";
@@ -32,11 +37,9 @@ export const cardClass = ({
   interactive?: boolean;
   className?: string;
 } = {}) =>
-  [
+  cn(
     BASE,
     TONE[tone],
     interactive && "hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20",
     className,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  );

@@ -1,4 +1,5 @@
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
+import { cn } from "~/lib/cn";
 
 /**
  * The `// label` eyebrow plus section title, with its scroll-in wrapper.
@@ -37,7 +38,7 @@ export const SectionHeader = ({
   return (
     <div
       ref={ref}
-      className={`${className} ${isVisible ? "scroll-visible" : "scroll-hidden"}`}
+      className={cn(className, isVisible ? "scroll-visible" : "scroll-hidden")}
     >
       {content}
     </div>

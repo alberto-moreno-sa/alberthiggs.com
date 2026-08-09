@@ -42,10 +42,13 @@ export default function LabSurvey() {
           The INEGI credit stays in Spanish because that is the wording their
           terms of use prescribe, and the product name is a proper noun. */}
       <p className="pointer-events-none absolute left-4 top-14 z-20 max-w-[15rem] font-mono text-[10px] leading-relaxed text-white/30">
-        Elevation data — Fuente: INEGI, Modelos Digitales de Elevación de alta
-        resolución LiDAR 1.5 m (superficie y terreno), sheets E14A39 B1–B4, 2020
-        edition. Building footprints © Overture Maps Foundation / ©
-        OpenStreetMap contributors (ODbL).
+        Elevation data —{" "}
+        <span lang="es">
+          Fuente: INEGI, Modelos Digitales de Elevación de alta resolución LiDAR
+          1.5 m (superficie y terreno)
+        </span>
+        , sheets E14A39 B1–B4, 2020 edition. Building footprints © Overture Maps
+        Foundation / © OpenStreetMap contributors (ODbL).
       </p>
     </div>
   );

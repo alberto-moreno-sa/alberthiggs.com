@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { trackNavClick, trackResumeDownload } from "~/lib/analytics";
+import { cn } from "~/lib/cn";
 
 const navLinks = [
   { label: "About", href: "#about", num: "01" },
@@ -58,11 +59,12 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
           ? "glass border-b border-border/50 shadow-lg shadow-black/20"
-          : "bg-transparent"
-      }`}
+          : "bg-transparent",
+      )}
     >
       <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
         <a
@@ -90,11 +92,12 @@ const Navbar = () => {
                   scrollTo(e, sectionId);
                   trackNavClick(link.label.toLowerCase());
                 }}
-                className={`nav-link relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                className={cn(
+                  "nav-link relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                   activeSection === sectionId
                     ? "text-accent nav-link-active"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
+                    : "text-text-secondary hover:text-text-primary",
+                )}
               >
                 <span className="font-mono text-[10px] text-accent/60 mr-1">
                   {link.num}.
@@ -123,19 +126,22 @@ const Navbar = () => {
           aria-controls="mobile-menu"
         >
           <span
-            className={`w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center ${
-              mobileOpen ? "rotate-45 translate-y-[4px]" : ""
-            }`}
+            className={cn(
+              "w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center",
+              mobileOpen ? "rotate-45 translate-y-[4px]" : "",
+            )}
           />
           <span
-            className={`w-5 h-0.5 bg-text-primary transition-all duration-300 ${
-              mobileOpen ? "opacity-0" : ""
-            }`}
+            className={cn(
+              "w-5 h-0.5 bg-text-primary transition-all duration-300",
+              mobileOpen ? "opacity-0" : "",
+            )}
           />
           <span
-            className={`w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center ${
-              mobileOpen ? "-rotate-45 -translate-y-[4px]" : ""
-            }`}
+            className={cn(
+              "w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center",
+              mobileOpen ? "-rotate-45 -translate-y-[4px]" : "",
+            )}
           />
         </button>
       </div>
@@ -145,9 +151,10 @@ const Navbar = () => {
       <div
         id="mobile-menu"
         aria-hidden={!mobileOpen}
-        className={`md:hidden glass border-b border-border/50 overflow-hidden transition-all duration-300 ${
-          mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={cn(
+          "md:hidden glass border-b border-border/50 overflow-hidden transition-all duration-300",
+          mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
+        )}
       >
         <div className="px-6 py-4 flex flex-col gap-2">
           {navLinks.map((link) => {
@@ -162,11 +169,12 @@ const Navbar = () => {
                   setMobileOpen(false);
                   trackNavClick(link.label.toLowerCase());
                 }}
-                className={`nav-link relative px-4 py-3 text-sm font-medium rounded-lg transition-all ${
+                className={cn(
+                  "nav-link relative px-4 py-3 text-sm font-medium rounded-lg transition-all",
                   activeSection === sectionId
                     ? "text-accent nav-link-active"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
+                    : "text-text-secondary hover:text-text-primary",
+                )}
               >
                 <span className="font-mono text-[10px] text-accent/60 mr-2">
                   {link.num}.

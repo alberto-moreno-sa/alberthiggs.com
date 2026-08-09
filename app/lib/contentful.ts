@@ -1,3 +1,5 @@
+import { safeContactUrl, safeHttpUrl } from "./safeUrl";
+
 // Types for each section's JSON content
 
 export interface PersonalInfo {
@@ -125,7 +127,10 @@ const isPersonalInfo = (v: unknown): v is PersonalInfo =>
   isObject(v) &&
   typeof v.name === "string" &&
   typeof v.title === "string" &&
+  // Rendered into `mailto:` unguarded, so an address that cannot form a safe
+  // URL is a broken section, not a droppable field.
   typeof v.email === "string" &&
+  safeContactUrl("mailto", v.email) !== undefined &&
   typeof v.heroTagline === "string" &&
   Array.isArray(v.heroStats) &&
   isStringArray(v.bio) &&
@@ -256,17 +261,54 @@ export class ContentfulClient {
       );
     }
 
+    /**
+     * Strip any link the browser must not follow.
+     *
+     * These fields are free text in the CMS and get rendered straight into
+     * `href`. React does not sanitise an anchor's scheme, so a `javascript:`
+     * value would execute on click. Dropping it here means the component's
+     * existing `{url && <a …>}` guard simply omits the link — no call site
+     * needs to know. The image fields also feed `resolveImageUrl`, which
+     * validates the host separately before fetching.
+     */
+    const sanitizeLinks = <T extends object>(
+      entry: T,
+      fields: ReadonlyArray<keyof T>,
+    ): T => {
+      const out = { ...entry };
+      for (const field of fields) {
+        const raw = out[field];
+        if (typeof raw !== "string") continue;
+        const safe = safeHttpUrl(raw);
+        if (safe === undefined) {
+          console.warn(
+            `[Contentful] Dropped unsafe URL in "${String(field)}": ${raw.slice(0, 60)}`,
+          );
+        }
+        out[field] = safe as T[keyof T];
+      }
+      return out;
+    };
+
     return {
-      personal,
-      experience: getList("experience", isExperience),
+      personal: sanitizeLinks(personal, [
+        "githubUrl",
+        "linkedinUrl",
+        "resumeUrl",
+      ]),
+      experience: getList("experience", isExperience).map((e) =>
+        sanitizeLinks(e, ["website", "imageUrl"]),
+      ),
       // Resolve the category fallback once, at the boundary, so the UI can
       // treat `category` as always present.
       projects: getList("projects", isProject).map((p) => ({
-        ...p,
+        ...sanitizeLinks(p, ["githubUrl", "liveUrl", "imageUrl"]),
         category: p.category ?? DEFAULT_CATEGORY,
       })),
       skills: getList("skills", isSkillCategory),
-      testimonials: getList("testimonials", isTestimonial),
+      testimonials: getList("testimonials", isTestimonial).map((t) =>
+        sanitizeLinks(t, ["avatarUrl", "linkedInUrl"]),
+      ),
     };
   }
 }

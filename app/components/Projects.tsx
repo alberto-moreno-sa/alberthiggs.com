@@ -9,6 +9,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "~/components/ui/icons";
+import { cn } from "~/lib/cn";
 
 const ProjectSlider = ({
   children,
@@ -114,8 +115,14 @@ const FeaturedProject = ({
   project: ResolvedProject;
   index: number;
 }) => {
-  const { isExpanded, contentRef, contentHeight, triggerProps } =
-    useExpandable();
+  const {
+    isExpanded,
+    contentRef,
+    contentHeight,
+    triggerProps,
+    labelId,
+    panelId,
+  } = useExpandable();
 
   return (
     <div
@@ -180,13 +187,19 @@ const FeaturedProject = ({
         </div>
 
         {/* Title */}
-        <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors mb-3 font-mono">
+        <h3
+          id={labelId}
+          className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors mb-3 font-mono"
+        >
           {project.name}
         </h3>
 
         {/* Description */}
         <p
-          className={`text-text-secondary text-sm leading-relaxed mb-4 ${!isExpanded ? "line-clamp-3 min-h-[4.875em]" : ""}`}
+          className={cn(
+            "text-text-secondary text-sm leading-relaxed mb-4",
+            !isExpanded ? "line-clamp-3 min-h-[4.875em]" : "",
+          )}
         >
           {isExpanded ? project.longDescription : project.shortDescription}
         </p>
@@ -194,6 +207,14 @@ const FeaturedProject = ({
         {/* Technologies (collapsed: 2 rows with tooltip) */}
         {!isExpanded && (
           <div className="relative group/tech mb-4">
+            {/* The strip clips to two rows and the hover panel below reveals
+                the rest. That panel is a pointer-only shortcut, not the only
+                route to the information: the card's own "View details" control
+                is keyboard-operable and lists every technology under its
+                Technologies heading, which is what satisfies WCAG 1.4.13. The
+                panel is therefore marked decorative rather than made focusable
+                — a tabbable div here would just add a stop that announces the
+                same chips the expanded card already reads out. */}
             <div className="flex flex-wrap gap-2 min-h-[52px] max-h-[52px] overflow-hidden cursor-default">
               {project.technologies.map((tech) => (
                 <span
@@ -205,7 +226,10 @@ const FeaturedProject = ({
               ))}
             </div>
             {project.technologies.length >= 3 && (
-              <div className="invisible group-hover/tech:visible opacity-0 group-hover/tech:opacity-100 transition-all duration-200 absolute z-50 bottom-full left-0 right-0 mb-2 p-3 bg-surface border border-border rounded-lg shadow-xl shadow-black/40">
+              <div
+                aria-hidden="true"
+                className="invisible group-hover/tech:visible group-focus-within/tech:visible opacity-0 group-hover/tech:opacity-100 group-focus-within/tech:opacity-100 transition-all duration-200 absolute z-50 bottom-full left-0 right-0 mb-2 p-3 bg-surface border border-border rounded-lg shadow-xl shadow-black/40"
+              >
                 <div className="flex flex-wrap gap-2">
                   {project.technologies.map((tech) => (
                     <span
@@ -228,7 +252,10 @@ const FeaturedProject = ({
           className="flex items-center gap-2 text-accent/70 text-xs cursor-pointer select-none mb-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
         >
           <svg
-            className={`expand-chevron w-4 h-4 ${isExpanded ? "expand-chevron-open" : ""}`}
+            className={cn(
+              "expand-chevron w-4 h-4",
+              isExpanded ? "expand-chevron-open" : "",
+            )}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -245,6 +272,7 @@ const FeaturedProject = ({
 
         {/* Expandable content */}
         <div
+          id={panelId}
           className="overflow-hidden transition-[max-height] duration-500 ease-in-out"
           style={{ maxHeight: isExpanded ? contentHeight : 0 }}
           aria-hidden={!isExpanded}
@@ -292,8 +320,14 @@ const SmallProject = ({
   project: ResolvedProject;
   index: number;
 }) => {
-  const { isExpanded, contentRef, contentHeight, triggerProps } =
-    useExpandable();
+  const {
+    isExpanded,
+    contentRef,
+    contentHeight,
+    triggerProps,
+    labelId,
+    panelId,
+  } = useExpandable();
 
   return (
     <div
@@ -334,7 +368,10 @@ const SmallProject = ({
         {...triggerProps}
         className="cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
       >
-        <h4 className="font-bold text-text-primary group-hover:text-accent transition-colors mb-2 font-mono">
+        <h4
+          id={labelId}
+          className="font-bold text-text-primary group-hover:text-accent transition-colors mb-2 font-mono"
+        >
           {project.name}
         </h4>
         <p className="text-text-secondary text-xs leading-relaxed mb-3 line-clamp-3 min-h-[4.875em]">
@@ -343,7 +380,10 @@ const SmallProject = ({
 
         <div className="flex items-center gap-1 text-accent/70 text-[10px]">
           <svg
-            className={`expand-chevron w-3 h-3 ${isExpanded ? "expand-chevron-open" : ""}`}
+            className={cn(
+              "expand-chevron w-3 h-3",
+              isExpanded ? "expand-chevron-open" : "",
+            )}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -361,6 +401,7 @@ const SmallProject = ({
 
       {/* Expandable tech stack */}
       <div
+        id={panelId}
         className="overflow-hidden transition-[max-height] duration-500 ease-in-out"
         style={{ maxHeight: isExpanded ? contentHeight : 0 }}
         aria-hidden={!isExpanded}
@@ -393,22 +434,29 @@ const ProjectFilterTabs = ({
   activeCategory: string;
   onSelect: (cat: string) => void;
 }) => (
+  // These were marked up as role="tablist"/role="tab" but implemented none of
+  // the rest of the pattern — no aria-controls, no tabpanel, no roving tabindex
+  // or arrow-key movement — so assistive tech announced "tab 1 of N" for
+  // controls that behave nothing like tabs. They are filters over a single
+  // grid, not alternative panels, so they are toggle buttons: aria-pressed
+  // carries the state and plain Tab still reaches every one.
   <div
     className="flex flex-wrap gap-2 mb-12"
-    role="tablist"
+    role="group"
     aria-label="Filter projects by category"
   >
     {categories.map((cat) => (
       <button
         key={cat}
-        role="tab"
-        aria-selected={activeCategory === cat}
+        type="button"
+        aria-pressed={activeCategory === cat}
         onClick={() => onSelect(cat)}
-        className={`px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm font-mono rounded-lg border transition-all duration-300 ${
+        className={cn(
+          "px-3 py-1.5 text-xs sm:px-4 sm:py-2 sm:text-sm font-mono rounded-lg border transition-all duration-300",
           activeCategory === cat
             ? "bg-accent text-bg border-accent"
-            : "border-border text-text-muted hover:border-accent/30 hover:text-accent bg-card/30"
-        }`}
+            : "border-border text-text-muted hover:border-accent/30 hover:text-accent bg-card/30",
+        )}
       >
         {cat}
       </button>
@@ -467,7 +515,10 @@ const Projects = ({
         )}
 
         <div
-          className={`transition-opacity duration-200 ${transitioning ? "opacity-0" : "opacity-100"}`}
+          className={cn(
+            "transition-opacity duration-200",
+            transitioning ? "opacity-0" : "opacity-100",
+          )}
         >
           {/* Featured projects slider */}
           {featured.length > 0 && (

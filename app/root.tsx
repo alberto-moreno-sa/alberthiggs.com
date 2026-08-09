@@ -25,7 +25,13 @@ export const meta: MetaFunction = () => rootMeta;
 
 export function loader({ context }: LoaderFunctionArgs) {
   const env = context.cloudflare.env;
-  return json({ gaTrackingId: env.GA_MEASUREMENT_ID ?? "" });
+  // The nonce is minted per request in getLoadContext and travels to the
+  // component tree through here, so <Scripts> and <ScrollRestoration> can stamp
+  // it on the inline tags they emit.
+  return json({
+    gaTrackingId: env.GA_MEASUREMENT_ID ?? "",
+    nonce: context.nonce,
+  });
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -47,8 +53,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </a>
         {children}
         <GoogleAnalytics gaTrackingId={data?.gaTrackingId} />
-        <ScrollRestoration />
-        <Scripts />
+        <ScrollRestoration nonce={data?.nonce} />
+        <Scripts nonce={data?.nonce} />
       </body>
     </html>
   );

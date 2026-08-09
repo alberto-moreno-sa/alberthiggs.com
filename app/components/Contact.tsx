@@ -2,6 +2,7 @@ import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import type { PersonalInfo } from "~/lib/contentful";
 import { trackCtaClick, trackSocialClick } from "~/lib/analytics";
 import { GitHubIcon } from "~/components/ui/icons";
+import { cn } from "~/lib/cn";
 
 const Contact = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
   const { ref, isVisible } = useScrollAnimation();
@@ -10,7 +11,10 @@ const Contact = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
     <section id="contact" className="relative py-24">
       <div
         ref={ref}
-        className={`relative mx-auto max-w-2xl px-6 text-center ${isVisible ? "scroll-visible" : "scroll-hidden"}`}
+        className={cn(
+          "relative mx-auto max-w-2xl px-6 text-center",
+          isVisible ? "scroll-visible" : "scroll-hidden",
+        )}
       >
         <span className="section-label">// contact</span>
         <h2 className="text-3xl sm:text-4xl font-bold font-mono mt-2 mb-6">

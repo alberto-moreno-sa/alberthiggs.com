@@ -101,10 +101,13 @@ const Survey = () => {
         {/* The INEGI credit stays in Spanish because that is the wording their
             terms of use prescribe, and the product name is a proper noun. */}
         <p className="mt-4 font-mono text-[11px] leading-relaxed text-text-muted">
-          Elevation data — Fuente: INEGI, Modelos Digitales de Elevación de alta
-          resolución LiDAR 1.5 m, sheets E14A39 B1–B4, 2020 edition. Building
-          footprints © Overture Maps Foundation / © OpenStreetMap contributors
-          (ODbL).
+          Elevation data —{" "}
+          <span lang="es">
+            Fuente: INEGI, Modelos Digitales de Elevación de alta resolución
+            LiDAR 1.5 m
+          </span>
+          , sheets E14A39 B1–B4, 2020 edition. Building footprints © Overture
+          Maps Foundation / © OpenStreetMap contributors (ODbL).
         </p>
       </div>
     </section>
