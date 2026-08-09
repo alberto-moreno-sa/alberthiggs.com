@@ -28,10 +28,16 @@ function setSecurityHeaders(headers: Headers, nonce: string) {
       "default-src 'self'",
       // Remix emits its hydration payload and ScrollRestoration as inline
       // <script> tags, which is what required 'unsafe-inline' here — not GA,
-      // which loads by src. Those tags now carry this request's nonce, so the
-      // wildcard can go. 'strict-dynamic' lets the nonced bundle load its own
-      // chunks without every hashed filename needing an entry.
-      `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.google-analytics.com`,
+      // which loads by src. Those tags carry this request's nonce instead.
+      //
+      // Deliberately NOT 'strict-dynamic': that keyword makes the browser
+      // ignore 'self', and Cloudflare injects its own same-origin script at
+      // /cdn-cgi/scripts/.../email-decode.min.js to un-obfuscate the mailto
+      // links it rewrites. With strict-dynamic that script was blocked and
+      // every email link on the contact section stayed pointing at
+      // /cdn-cgi/l/email-protection. Keeping 'self' covers it, and the nonce
+      // still does the job that mattered here — removing 'unsafe-inline'.
+      `script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com`,
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self'",
       // Contentful is never contacted from the browser: images and the resume
