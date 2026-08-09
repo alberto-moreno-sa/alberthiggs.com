@@ -1,4 +1,4 @@
-import { useLocation } from "@remix-run/react";
+import { useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { trackPageView } from "~/lib/analytics";
 

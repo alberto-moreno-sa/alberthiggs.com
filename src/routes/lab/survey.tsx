@@ -1,19 +1,23 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { Link } from "@remix-run/react";
-import type { MetaFunction } from "@remix-run/cloudflare";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 const CityViewer = lazy(() => import("~/components/city/CityViewer"));
 
-export const meta: MetaFunction = () => [
-  { title: "Reforma — Alberto Moreno" },
-  {
-    name: "description",
-    content:
-      "A streaming 3D flyover of Paseo de la Reforma, with the height of 12,414 buildings measured from INEGI's public LiDAR surface and terrain models.",
-  },
-];
+export const Route = createFileRoute("/lab/survey")({
+  head: () => ({
+    meta: [
+      { title: "Reforma — Alberto Moreno" },
+      {
+        name: "description",
+        content:
+          "A streaming 3D flyover of Paseo de la Reforma, with the height of 12,414 buildings measured from INEGI's public LiDAR surface and terrain models.",
+      },
+    ],
+  }),
+  component: LabSurvey,
+});
 
-export default function LabSurvey() {
+function LabSurvey() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -32,7 +36,8 @@ export default function LabSurvey() {
       ) : null}
 
       <Link
-        to="/#reforma"
+        to="/"
+        hash="reforma"
         className="absolute left-4 top-4 z-20 rounded border border-white/10 bg-black/50 px-3 py-1.5 font-mono text-xs text-white/70 backdrop-blur transition hover:text-white"
       >
         ← back

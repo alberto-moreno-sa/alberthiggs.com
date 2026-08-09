@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { Link } from "@remix-run/react";
+import { Link } from "@tanstack/react-router";
 import { SectionHeader } from "~/components/ui/SectionHeader";
 
 const CityViewer = lazy(() => import("~/components/city/CityViewer"));

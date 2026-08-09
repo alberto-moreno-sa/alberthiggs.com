@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { siteConfig } from "~/lib/seo";
 
 /**
@@ -12,8 +13,11 @@ const ROUTES = [
   { path: "/lab/survey", changefreq: "monthly", priority: "0.7" },
 ];
 
-export const loader = () => {
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+export const Route = createFileRoute("/sitemap.xml")({
+  server: {
+    handlers: {
+      GET: () => {
+        const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${ROUTES.map(
   ({ path, changefreq, priority }) => `  <url>
@@ -24,10 +28,13 @@ ${ROUTES.map(
 ).join("\n")}
 </urlset>`;
 
-  return new Response(sitemap, {
-    headers: {
-      "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "public, max-age=86400, s-maxage=604800",
+        return new Response(sitemap, {
+          headers: {
+            "Content-Type": "application/xml; charset=utf-8",
+            "Cache-Control": "public, max-age=86400, s-maxage=604800",
+          },
+        });
+      },
     },
-  });
-};
+  },
+});

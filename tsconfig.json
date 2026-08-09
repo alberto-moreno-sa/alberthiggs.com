@@ -1,34 +1,20 @@
 {
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/.server/**/*.ts",
-    "**/.server/**/*.tsx",
-    "**/.client/**/*.ts",
-    "**/.client/**/*.tsx"
-  ],
-  "exclude": ["functions", "node_modules", "build"],
+  "include": ["**/*.ts", "**/*.tsx", "eslint.config.js", "vite.config.ts"],
+  "exclude": ["node_modules", "dist", ".wrangler"],
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": [
-      "@remix-run/cloudflare",
-      "vite/client",
-      "@cloudflare/workers-types"
-    ],
-    "isolatedModules": true,
-    "esModuleInterop": true,
+    "target": "ES2022",
     "jsx": "react-jsx",
     "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "resolveJsonModule": true,
-    "target": "ES2022",
-    "strict": true,
-    "allowJs": true,
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "paths": { "~/*": ["./src/*"] },
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "~/*": ["./app/*"]
-    },
-    "noEmit": true
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
   }
 }

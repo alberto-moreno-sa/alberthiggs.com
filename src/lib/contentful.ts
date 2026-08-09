@@ -199,9 +199,12 @@ export class ContentfulClient {
         Authorization: `Bearer ${this.accessToken}`,
       },
       body: JSON.stringify({ query: ALL_SECTIONS_QUERY }),
+      // `cf` is a Cloudflare extension to RequestInit and is not in the DOM
+      // lib's type, so this widens rather than pulling in workers-types purely
+      // for one property.
       cf: { cacheTtl: 3600, cacheEverything: true },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-    });
+    } as RequestInit);
 
     console.log(
       "[Contentful] cf-cache-status:",
