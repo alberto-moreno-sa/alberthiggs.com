@@ -1,19 +1,19 @@
 # alberthiggs.com
 
-Personal portfolio site, built with [Remix](https://remix.run/) and [Tailwind CSS](https://tailwindcss.com/), rendered on [Cloudflare Pages](https://pages.cloudflare.com/) and driven by content from [Contentful](https://www.contentful.com/). Alongside the usual portfolio sections it hosts a WebGL flyover of Paseo de la Reforma built from public LiDAR data.
+Personal portfolio site, built with [TanStack Start](https://tanstack.com/start) and [Tailwind CSS](https://tailwindcss.com/), rendered on [Cloudflare Workers](https://workers.cloudflare.com/) and driven by content from [Contentful](https://www.contentful.com/). Alongside the usual portfolio sections it hosts a WebGL flyover of Paseo de la Reforma built from public LiDAR data.
 
 ## Tech Stack
 
-| Category  | Technology                                                          |
-| --------- | ------------------------------------------------------------------- |
-| Framework | [Remix](https://remix.run/) v2 + [Vite](https://vite.dev/) v6       |
-| Language  | [TypeScript](https://www.typescriptlang.org/) 5                     |
-| Styling   | [Tailwind CSS](https://tailwindcss.com/) v4 (CSS-first `@theme`)    |
-| 3D        | [three.js](https://threejs.org/) + @react-three/fiber, drei         |
-| CMS       | [Contentful](https://www.contentful.com/) (GraphQL Content API)     |
-| Hosting   | [Cloudflare Pages](https://pages.cloudflare.com/) (Workers runtime) |
-| Analytics | Google Analytics 4                                                  |
-| Runtime   | Node.js >= 20                                                       |
+| Category  | Technology                                                                  |
+| --------- | --------------------------------------------------------------------------- |
+| Framework | [TanStack Start](https://tanstack.com/start) + [Vite](https://vite.dev/) v8 |
+| Language  | [TypeScript](https://www.typescriptlang.org/) 5                             |
+| Styling   | [Tailwind CSS](https://tailwindcss.com/) v4 (CSS-first `@theme`)            |
+| 3D        | [three.js](https://threejs.org/) + @react-three/fiber, drei                 |
+| CMS       | [Contentful](https://www.contentful.com/) (GraphQL Content API)             |
+| Hosting   | [Cloudflare Workers](https://workers.cloudflare.com/) (static assets + SSR) |
+| Analytics | Google Analytics 4                                                          |
+| Runtime   | Node.js >= 22 (wrangler 4 requires it)                                      |
 
 ## Features
 
@@ -31,7 +31,14 @@ Personal portfolio site, built with [Remix](https://remix.run/) and [Tailwind CS
 ## Project Structure
 
 ```
-app/
+src/
+├── routes/                  # File-based routing (TanStack Router)
+│   ├── __root.tsx           # Document shell, head, skip link, error pages
+│   ├── index.tsx            # Home — loader + section layout
+│   ├── lab/survey.tsx       # Full-screen 3D viewer
+│   ├── asset.$type.$slug.ts # Server route: same-origin Contentful image proxy
+│   ├── resume.ts            # Server route: same-origin résumé proxy
+│   └── sitemap[.]xml.ts     # Server route
 ├── components/
 │   ├── ui/                  # Shared primitives — SectionHeader, Card, Pill, icons
 │   ├── city/                # The Reforma 3D viewer (self-contained)
@@ -65,23 +72,18 @@ app/
 │   └── usePrefersReducedMotion.ts
 ├── lib/
 │   ├── analytics.ts         # GA4 event helpers
+│   ├── cn.ts                # clsx + tailwind-merge
 │   ├── contentful.ts        # GraphQL client, types and boundary validation
+│   ├── safeUrl.ts           # Scheme validation for CMS-provided URLs
+│   ├── securityHeaders.ts   # CSP, HSTS and cache headers
 │   ├── seo.ts               # Site metadata, meta tags and links
 │   └── slugify.ts
-├── routes/
-│   ├── _index.tsx           # Home — loader, cache headers, section layout
-│   ├── $.tsx                # 404
-│   ├── asset.$type.$slug.ts # Same-origin proxy for Contentful images
-│   ├── resume.ts            # Same-origin proxy for the résumé PDF
-│   ├── sitemap[.]xml.ts
-│   └── lab.survey.tsx       # Full-screen 3D viewer
-├── app.css                  # @theme tokens, base styles, keyframes
-├── entry.client.tsx         # Client hydration
-├── entry.server.tsx         # Streaming SSR + security headers
-└── root.tsx                 # Root layout, skip link, error boundary
-functions/
-└── [[path]].ts              # Cloudflare Pages function handler
+├── router.tsx               # Router construction, per-request CSP nonce
+├── server.ts                # Worker entry — stamps security headers on every response
+├── start.ts                 # Request middleware
+└── styles.css               # @theme tokens, base styles, keyframes
 public/
+├── _headers                 # Cache-Control for static assets and city tiles
 └── data/city/               # Pre-built city tiles and index
 ```
 
@@ -89,7 +91,7 @@ public/
 
 ### Prerequisites
 
-- Node.js **>= 20**
+- Node.js **>= 22** — wrangler 4 refuses to run on older versions (`.nvmrc` pins it)
 - A [Contentful](https://www.contentful.com/) space with the matching content model
 - (Optional) A Google Analytics 4 property
 
@@ -120,7 +122,7 @@ The site will be available at `http://localhost:5173`.
 
 | Command                | Description                                   |
 | ---------------------- | --------------------------------------------- |
-| `npm run dev`          | Start Remix + Vite dev server                 |
+| `npm run dev`          | Start the Vite dev server                     |
 | `npm run build`        | Production build                              |
 | `npm run preview`      | Preview production build locally via Wrangler |
 | `npm run deploy`       | Deploy to Cloudflare Pages                    |
@@ -141,7 +143,7 @@ All content lives in a single Contentful content type, `siteSection`, with two f
 | `skills`       | Array — title, iconId, skills[]                                                     |
 | `testimonials` | Array — name, role, company, quote                                                  |
 
-Because the content is hand-authored JSON, `app/lib/contentful.ts` shape-checks each section at the boundary. A malformed entry is dropped and logged with its section id; a malformed `personal` is fatal, since the page means nothing without it.
+Because the content is hand-authored JSON, `src/lib/contentful.ts` shape-checks each section at the boundary. A malformed entry is dropped and logged with its section id; a malformed `personal` is fatal, since the page means nothing without it.
 
 ## Deployment
 
@@ -149,7 +151,7 @@ Pushing to `main` runs `.github/workflows/release.yml`, which:
 
 1. **verify** — typecheck, lint, format check and build. Everything downstream depends on this, so a red check never reaches production.
 2. **release** — cuts the next patch tag and creates a GitHub release with generated notes.
-3. **deploy** — builds and deploys to Cloudflare Pages.
+3. **deploy** — builds and runs `wrangler deploy` (Workers, not Pages).
 
 ### Required secrets
 

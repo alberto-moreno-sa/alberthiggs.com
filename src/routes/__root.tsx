@@ -3,40 +3,41 @@ import {
   Link,
   Outlet,
   Scripts,
-  createRootRouteWithContext,
+  createRootRoute,
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { setResponseHeader } from "@tanstack/react-start/server";
 import { env } from "cloudflare:workers";
 import { GoogleAnalytics } from "~/components/GoogleAnalytics";
 import { rootLinks, rootMeta } from "~/lib/seo";
-import { securityHeaders } from "~/lib/securityHeaders";
 import appCss from "~/styles.css?url";
 
 /**
- * Applies the document's response headers and hands back the shell's data.
+ * The shell's server data.
  *
- * The nonce comes from the router (see src/router.tsx) so the value in the CSP
- * header is the same one stamped on Start's inline hydration script.
+ * Takes no input: this is reachable as a public RPC endpoint, and it used to
+ * accept the CSP nonce as an argument that flowed unvalidated into the
+ * `script-src 'nonce-...'` directive. Security headers are set by request
+ * middleware now (src/start.ts), so nothing crosses this boundary.
  */
-const getShellData = createServerFn()
-  .inputValidator((nonce: string) => nonce)
-  .handler(async ({ data: nonce }) => {
-    for (const [name, value] of Object.entries(securityHeaders(nonce))) {
-      setResponseHeader(name, value);
-    }
+const getShellData = createServerFn().handler(async () => ({
+  gaTrackingId: env.GA_MEASUREMENT_ID ?? "",
+}));
 
-    return { gaTrackingId: env.GA_MEASUREMENT_ID ?? "" };
-  });
-
-export const Route = createRootRouteWithContext<{ nonce: string }>()({
-  loader: ({ context }) => getShellData({ data: context.nonce }),
+export const Route = createRootRoute({
+  loader: () => getShellData(),
   head: () => ({
     meta: rootMeta,
     links: [...rootLinks, { rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootDocument,
-  errorComponent: ErrorPage,
+  // TanStack calls this with { error, info, reset } — never with `status`.
+  // Destructuring `status` here meant every failure rendered as a generic 500
+  // and the actual error was never read, so a Contentful outage left no trace
+  // in the Worker logs.
+  errorComponent: ({ error, reset }) => {
+    console.error("[root] render error:", error);
+    return <ErrorPage status={500} onRetry={reset} />;
+  },
   notFoundComponent: () => <ErrorPage status={404} />,
 });
 
@@ -62,7 +63,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ErrorPage({ status = 500 }: { status?: number }) {
+function ErrorPage({
+  status = 500,
+  onRetry,
+}: {
+  status?: number;
+  onRetry?: () => void;
+}) {
   const isNotFound = status === 404;
 
   return (
@@ -79,26 +86,37 @@ function ErrorPage({ status = 500 }: { status?: number }) {
             ? "The page you're looking for doesn't exist or has been moved."
             : "An unexpected error occurred. Please try again later."}
         </p>
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-accent/30 text-accent hover:bg-accent/10 transition-colors font-mono text-sm"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-            aria-hidden="true"
+        <div className="flex items-center justify-center gap-3">
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-accent/30 text-accent hover:bg-accent/10 transition-colors font-mono text-sm"
+            >
+              Try again
+            </button>
+          )}
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-accent/30 text-accent hover:bg-accent/10 transition-colors font-mono text-sm"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-            />
-          </svg>
-          Back to home
-        </Link>
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+              />
+            </svg>
+            Back to home
+          </Link>
+        </div>
       </div>
     </div>
   );

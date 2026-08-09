@@ -131,6 +131,12 @@ const isPersonalInfo = (v: unknown): v is PersonalInfo =>
   // URL is a broken section, not a droppable field.
   typeof v.email === "string" &&
   safeContactUrl("mailto", v.email) !== undefined &&
+  // Interpolated into `tel:` by Contact.tsx. Not an XSS vector (React escapes
+  // the attribute and the scheme is fixed in code), but it was the one href
+  // field skipping the sanitising layer.
+  (v.phone === undefined ||
+    (typeof v.phone === "string" &&
+      safeContactUrl("tel", v.phone) !== undefined)) &&
   typeof v.heroTagline === "string" &&
   Array.isArray(v.heroStats) &&
   isStringArray(v.bio) &&
@@ -174,6 +180,14 @@ export class ContentfulClient {
   private spaceId: string;
 
   constructor(spaceId: string, accessToken: string) {
+    // Fail here, naming the binding, rather than building a broken URL and
+    // surfacing an opaque fetch error three frames later. A freshly deployed
+    // Worker with no secrets set hits exactly this.
+    if (!spaceId || !accessToken) {
+      throw new Error(
+        `Contentful is not configured: ${!spaceId ? "CONTENTFUL_SPACE_ID" : ""}${!spaceId && !accessToken ? " and " : ""}${!accessToken ? "CONTENTFUL_ACCESS_TOKEN" : ""} missing from the Worker environment`,
+      );
+    }
     this.spaceId = spaceId;
     this.accessToken = accessToken;
     this.graphqlUrl = `https://graphql.contentful.com/content/v1/spaces/${spaceId}/environments/master`;
@@ -199,9 +213,13 @@ export class ContentfulClient {
         Authorization: `Bearer ${this.accessToken}`,
       },
       body: JSON.stringify({ query: ALL_SECTIONS_QUERY }),
-      // `cf` is a Cloudflare extension to RequestInit and is not in the DOM
-      // lib's type, so this widens rather than pulling in workers-types purely
-      // for one property.
+      // NOTE: this is a POST, and the Workers fetch cache does not cache POST
+      // requests — `cf-cache-status` comes back DYNAMIC, not HIT/MISS. The
+      // directive is kept because it costs nothing and would apply if this ever
+      // moves to GET, but it buys nothing today. The real protection against a
+      // round trip per request is the isolate memo above plus the edge cache on
+      // the HTML document, which needs a text/html Cache Rule on the zone.
+      // `cf` is a Cloudflare extension to RequestInit, hence the widening cast.
       cf: { cacheTtl: 3600, cacheEverything: true },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     } as RequestInit);
