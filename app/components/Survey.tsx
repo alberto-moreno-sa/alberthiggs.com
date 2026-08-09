@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Link } from "@remix-run/react";
-import { useScrollAnimation } from "~/hooks/useScrollAnimation";
+import { SectionHeader } from "~/components/ui/SectionHeader";
 
 const CityViewer = lazy(() => import("~/components/city/CityViewer"));
 
@@ -57,19 +57,10 @@ const Stage = () => {
 };
 
 const Survey = () => {
-  const { ref, isVisible } = useScrollAnimation();
-
   return (
     <section id="reforma" className="relative py-24">
       <div className="relative mx-auto max-w-6xl px-6">
-        <div
-          ref={ref}
-          className={`mb-12 ${isVisible ? "scroll-visible" : "scroll-hidden"}`}
-        >
-          <span className="section-label">{"// lidar"}</span>
-          <h2 className="mt-2 font-mono text-3xl font-bold sm:text-4xl">
-            Reforma in 3D
-          </h2>
+        <SectionHeader label="lidar" title="Reforma in 3D">
           <p className="mt-4 max-w-2xl text-text-secondary">
             Building footprints are widely available; their heights are not —
             only 7% of the buildings along Reforma carry one. So I measured
@@ -79,7 +70,7 @@ const Survey = () => {
             viewer streams the city as 50 KB tiles through a memory-bounded LRU
             cache while the timeline flies the corridor.
           </p>
-        </div>
+        </SectionHeader>
 
         <div className="overflow-hidden rounded-lg border border-border bg-surface">
           <div className="relative aspect-[16/10] w-full sm:aspect-[16/9]">

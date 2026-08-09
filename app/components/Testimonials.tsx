@@ -1,6 +1,9 @@
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import type { Testimonial } from "~/lib/contentful";
 import { slugify } from "~/lib/slugify";
+import { SectionHeader } from "~/components/ui/SectionHeader";
+import { cardClass } from "~/components/ui/cardClass";
+import { ArrowUpRightIcon } from "~/components/ui/icons";
 
 const TestimonialCard = ({
   testimonial,
@@ -62,28 +65,18 @@ const TestimonialCard = ({
         {testimonial.linkedInUrl && (
           <span className="text-xs text-text-muted group-hover:text-accent transition-colors font-mono flex items-center gap-1">
             Ver perfil
-            <svg
-              className="w-3 h-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
-              />
-            </svg>
+            <ArrowUpRightIcon />
           </span>
         )}
       </div>
     </>
   );
 
-  const cardClass = `group rounded-2xl border border-border bg-card/50 p-6 md:p-8 hover:border-border-light transition-all duration-500 block ${
-    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-  }`;
+  const shell = cardClass({
+    className: `group p-6 md:p-8 block ${
+      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+    }`,
+  });
 
   return testimonial.linkedInUrl ? (
     <a
@@ -91,7 +84,7 @@ const TestimonialCard = ({
       href={testimonial.linkedInUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className={cardClass}
+      className={shell}
       style={{ transitionDelay: `${index * 120}ms` }}
     >
       {content}
@@ -99,7 +92,7 @@ const TestimonialCard = ({
   ) : (
     <div
       ref={ref as React.RefObject<HTMLDivElement>}
-      className={cardClass}
+      className={shell}
       style={{ transitionDelay: `${index * 120}ms` }}
     >
       {content}
@@ -108,23 +101,13 @@ const TestimonialCard = ({
 };
 
 const Testimonials = ({ testimonials }: { testimonials: Testimonial[] }) => {
-  const { ref, isVisible } = useScrollAnimation();
-
   if (testimonials.length === 0) return null;
 
   return (
     <section id="testimonials" className="relative py-24">
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Section header */}
-        <div
-          ref={ref}
-          className={`mb-12 ${isVisible ? "scroll-visible" : "scroll-hidden"}`}
-        >
-          <span className="section-label">// testimonials</span>
-          <h2 className="text-3xl sm:text-4xl font-bold font-mono mt-2">
-            Testimonials
-          </h2>
-        </div>
+        <SectionHeader label="testimonials" title="Testimonials" />
 
         {/* Cards grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

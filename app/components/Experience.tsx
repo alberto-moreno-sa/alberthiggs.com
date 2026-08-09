@@ -3,6 +3,8 @@ import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import { useExpandable } from "~/hooks/useExpandable";
 import type { Experience as ExperienceType } from "~/lib/contentful";
 import { slugify } from "~/lib/slugify";
+import { SectionHeader } from "~/components/ui/SectionHeader";
+import { cardClass } from "~/components/ui/cardClass";
 
 /**
  * Show just the host in the link label while the href keeps the full path.
@@ -53,7 +55,7 @@ const ExperienceCard = ({
         }`}
       >
         {/* Card */}
-        <div className="group flex-1 min-w-0 rounded-xl border border-border bg-card/50 hover:border-border-light transition-all duration-300">
+        <div className={cardClass({ className: "group flex-1 min-w-0" })}>
           {/* Clickable header */}
           <div
             {...triggerProps}
@@ -236,21 +238,11 @@ const ExperienceCard = ({
 };
 
 const Experience = ({ experiences }: { experiences: ExperienceType[] }) => {
-  const { ref, isVisible } = useScrollAnimation();
-
   return (
     <section id="experience" className="relative py-24">
       <div className="relative mx-auto max-w-5xl px-6">
         {/* Section header */}
-        <div
-          ref={ref}
-          className={`mb-12 ${isVisible ? "scroll-visible" : "scroll-hidden"}`}
-        >
-          <span className="section-label">// experience</span>
-          <h2 className="text-3xl sm:text-4xl font-bold font-mono mt-2">
-            Experience
-          </h2>
-        </div>
+        <SectionHeader label="experience" title="Experience" />
 
         {/* Timeline */}
         <div>

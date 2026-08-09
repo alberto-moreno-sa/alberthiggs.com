@@ -1,5 +1,7 @@
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import type { SkillCategory } from "~/lib/contentful";
+import { SectionHeader } from "~/components/ui/SectionHeader";
+import { cardClass } from "~/components/ui/cardClass";
 
 const iconMap: Record<string, React.ReactNode> = {
   code: (
@@ -122,9 +124,12 @@ const SkillCard = ({
   return (
     <div
       ref={ref}
-      className={`group rounded-xl border border-border bg-card/30 p-6 hover:border-border-light transition-all duration-500 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
+      className={cardClass({
+        tone: "sunken",
+        className: `group p-6 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`,
+      })}
       style={{ transitionDelay: `${index * 80}ms` }}
     >
       <div className="flex items-center justify-between mb-5">
@@ -156,21 +161,11 @@ const SkillCard = ({
 };
 
 const Skills = ({ skillCategories }: { skillCategories: SkillCategory[] }) => {
-  const { ref, isVisible } = useScrollAnimation();
-
   return (
     <section id="skills" className="relative py-24">
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Section header */}
-        <div
-          ref={ref}
-          className={`mb-12 ${isVisible ? "scroll-visible" : "scroll-hidden"}`}
-        >
-          <span className="section-label">// skills</span>
-          <h2 className="text-3xl sm:text-4xl font-bold font-mono mt-2">
-            Skills
-          </h2>
-        </div>
+        <SectionHeader label="skills" title="Skills" />
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {skillCategories.map((category, i) => (
