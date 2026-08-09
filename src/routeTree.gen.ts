@@ -8,125 +8,125 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ResumeRouteImport } from './routes/resume'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as LabSurveyRouteImport } from './routes/lab/survey'
-import { Route as AssetTypeSlugRouteImport } from './routes/asset.$type.$slug'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as ResumeRouteImport } from "./routes/resume";
+import { Route as SitemapDotxmlRouteImport } from "./routes/sitemap[.]xml";
+import { Route as LabSurveyRouteImport } from "./routes/lab/survey";
+import { Route as AssetTypeSlugRouteImport } from "./routes/asset.$type.$slug";
 
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const ResumeRoute = ResumeRouteImport.update({
-  id: '/resume',
-  path: '/resume',
+  id: "/resume",
+  path: "/resume",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+  id: "/sitemap.xml",
+  path: "/sitemap.xml",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const LabSurveyRoute = LabSurveyRouteImport.update({
-  id: '/lab/survey',
-  path: '/lab/survey',
+  id: "/lab/survey",
+  path: "/lab/survey",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AssetTypeSlugRoute = AssetTypeSlugRouteImport.update({
-  id: '/asset/$type/$slug',
-  path: '/asset/$type/$slug',
+  id: "/asset/$type/$slug",
+  path: "/asset/$type/$slug",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/resume': typeof ResumeRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/lab/survey': typeof LabSurveyRoute
-  '/asset/$type/$slug': typeof AssetTypeSlugRoute
+  "/": typeof IndexRoute;
+  "/resume": typeof ResumeRoute;
+  "/sitemap.xml": typeof SitemapDotxmlRoute;
+  "/lab/survey": typeof LabSurveyRoute;
+  "/asset/$type/$slug": typeof AssetTypeSlugRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/resume': typeof ResumeRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/lab/survey': typeof LabSurveyRoute
-  '/asset/$type/$slug': typeof AssetTypeSlugRoute
+  "/": typeof IndexRoute;
+  "/resume": typeof ResumeRoute;
+  "/sitemap.xml": typeof SitemapDotxmlRoute;
+  "/lab/survey": typeof LabSurveyRoute;
+  "/asset/$type/$slug": typeof AssetTypeSlugRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/resume': typeof ResumeRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/lab/survey': typeof LabSurveyRoute
-  '/asset/$type/$slug': typeof AssetTypeSlugRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/resume": typeof ResumeRoute;
+  "/sitemap.xml": typeof SitemapDotxmlRoute;
+  "/lab/survey": typeof LabSurveyRoute;
+  "/asset/$type/$slug": typeof AssetTypeSlugRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
-    | '/'
-    | '/resume'
-    | '/sitemap.xml'
-    | '/lab/survey'
-    | '/asset/$type/$slug'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/resume' | '/sitemap.xml' | '/lab/survey' | '/asset/$type/$slug'
+    | "/"
+    | "/resume"
+    | "/sitemap.xml"
+    | "/lab/survey"
+    | "/asset/$type/$slug";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/" | "/resume" | "/sitemap.xml" | "/lab/survey" | "/asset/$type/$slug";
   id:
-    | '__root__'
-    | '/'
-    | '/resume'
-    | '/sitemap.xml'
-    | '/lab/survey'
-    | '/asset/$type/$slug'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/"
+    | "/resume"
+    | "/sitemap.xml"
+    | "/lab/survey"
+    | "/asset/$type/$slug";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ResumeRoute: typeof ResumeRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  LabSurveyRoute: typeof LabSurveyRoute
-  AssetTypeSlugRoute: typeof AssetTypeSlugRoute
+  IndexRoute: typeof IndexRoute;
+  ResumeRoute: typeof ResumeRoute;
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute;
+  LabSurveyRoute: typeof LabSurveyRoute;
+  AssetTypeSlugRoute: typeof AssetTypeSlugRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resume': {
-      id: '/resume'
-      path: '/resume'
-      fullPath: '/resume'
-      preLoaderRoute: typeof ResumeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab/survey': {
-      id: '/lab/survey'
-      path: '/lab/survey'
-      fullPath: '/lab/survey'
-      preLoaderRoute: typeof LabSurveyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/asset/$type/$slug': {
-      id: '/asset/$type/$slug'
-      path: '/asset/$type/$slug'
-      fullPath: '/asset/$type/$slug'
-      preLoaderRoute: typeof AssetTypeSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/resume": {
+      id: "/resume";
+      path: "/resume";
+      fullPath: "/resume";
+      preLoaderRoute: typeof ResumeRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/sitemap.xml": {
+      id: "/sitemap.xml";
+      path: "/sitemap.xml";
+      fullPath: "/sitemap.xml";
+      preLoaderRoute: typeof SitemapDotxmlRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/lab/survey": {
+      id: "/lab/survey";
+      path: "/lab/survey";
+      fullPath: "/lab/survey";
+      preLoaderRoute: typeof LabSurveyRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/asset/$type/$slug": {
+      id: "/asset/$type/$slug";
+      path: "/asset/$type/$slug";
+      fullPath: "/asset/$type/$slug";
+      preLoaderRoute: typeof AssetTypeSlugRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
   }
 }
 
@@ -136,16 +136,16 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   LabSurveyRoute: LabSurveyRoute,
   AssetTypeSlugRoute: AssetTypeSlugRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
 
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
+import type { getRouter } from "./router.tsx";
+import type { createStart } from "@tanstack/react-start";
+declare module "@tanstack/react-start" {
   interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
+    ssr: true;
+    router: Awaited<ReturnType<typeof getRouter>>;
   }
 }
