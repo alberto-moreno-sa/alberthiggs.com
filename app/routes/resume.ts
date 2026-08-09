@@ -8,7 +8,7 @@ const ALLOWED_HOSTS = [
 ];
 
 export const loader = async ({ context }: LoaderFunctionArgs) => {
-  const env = context.cloudflare.env as Env;
+  const env = context.cloudflare.env;
   const client = new ContentfulClient(
     env.CONTENTFUL_SPACE_ID,
     env.CONTENTFUL_ACCESS_TOKEN,

@@ -70,7 +70,7 @@ const resolveImageUrl = (
 
 export const loader = async ({ params, context }: LoaderFunctionArgs) => {
   const { type, slug } = params;
-  const env = context.cloudflare.env as Env;
+  const env = context.cloudflare.env;
   const client = new ContentfulClient(
     env.CONTENTFUL_SPACE_ID,
     env.CONTENTFUL_ACCESS_TOKEN,

@@ -64,7 +64,7 @@ const TestimonialCard = ({
         </div>
         {testimonial.linkedInUrl && (
           <span className="text-xs text-text-muted group-hover:text-accent transition-colors font-mono flex items-center gap-1">
-            Ver perfil
+            View profile
             <ArrowUpRightIcon />
           </span>
         )}

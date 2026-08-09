@@ -24,7 +24,7 @@ export const links: LinksFunction = () => rootLinks;
 export const meta: MetaFunction = () => rootMeta;
 
 export function loader({ context }: LoaderFunctionArgs) {
-  const env = context.cloudflare.env as Env;
+  const env = context.cloudflare.env;
   return json({ gaTrackingId: env.GA_MEASUREMENT_ID ?? "" });
 }
 

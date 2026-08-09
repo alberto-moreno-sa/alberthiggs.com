@@ -29,8 +29,13 @@ function setSecurityHeaders(headers: Headers) {
       "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self'",
-      "img-src 'self' data: https://images.ctfassets.net https://*.ctfassets.net",
-      "connect-src 'self' https://cdn.contentful.com https://www.google-analytics.com https://www.googletagmanager.com",
+      // Contentful is never contacted from the browser: images and the resume
+      // are proxied same-origin through /asset/* and /resume, and the GraphQL
+      // call happens in the Worker, outside the browser's CSP entirely. The
+      // ctfassets and cdn.contentful.com entries (including a subdomain
+      // wildcard) were widening the allowed set for nothing.
+      "img-src 'self' data:",
+      "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
