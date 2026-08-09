@@ -1,4 +1,5 @@
 import { useScrollProgress } from "~/hooks/useScrollProgress";
+import { cn } from "~/lib/cn";
 
 interface TacoLayer {
   id: string;
@@ -55,7 +56,9 @@ const getLayerOpacity = (progress: number, threshold: number): number =>
   progress < threshold ? 0 : Math.min(1, (progress - threshold) / 0.15);
 
 const getLayerTranslateY = (progress: number, threshold: number): number =>
-  progress < threshold ? 20 : Math.max(0, 20 * (1 - (progress - threshold) / 0.15));
+  progress < threshold
+    ? 20
+    : Math.max(0, 20 * (1 - (progress - threshold) / 0.15));
 
 const TacoVisual = ({ progress }: { progress: number }) => {
   const isComplete = progress >= 0.95;
@@ -63,7 +66,10 @@ const TacoVisual = ({ progress }: { progress: number }) => {
   return (
     <svg
       viewBox="0 0 300 360"
-      className={`w-full max-w-[280px] md:max-w-[320px] ${isComplete ? "taco-complete" : ""}`}
+      className={cn(
+        "w-full max-w-[280px] md:max-w-[320px]",
+        isComplete ? "taco-complete" : "",
+      )}
       aria-hidden="true"
     >
       {/* Tortilla — curved shell */}
@@ -205,11 +211,12 @@ const IngredientText = ({ progress }: { progress: number }) => {
       {TACO_LAYERS.map((layer, i) => (
         <div
           key={layer.id}
-          className={`transition-opacity duration-500 ${
+          className={cn(
+            "transition-opacity duration-500",
             i === activeIndex
               ? "opacity-100"
-              : "opacity-0 pointer-events-none absolute inset-0"
-          }`}
+              : "opacity-0 pointer-events-none absolute inset-0",
+          )}
         >
           <span className="font-mono text-xs text-accent/70 tracking-wider uppercase">
             {String(i + 1).padStart(2, "0")}. {layer.subtitle}
@@ -231,9 +238,10 @@ const ProgressDots = ({ progress }: { progress: number }) => (
     {TACO_LAYERS.map((layer) => (
       <div
         key={layer.id}
-        className={`w-2 h-2 rounded-full transition-all duration-300 ${
-          progress >= layer.threshold ? "bg-accent scale-125" : "bg-border"
-        }`}
+        className={cn(
+          "w-2 h-2 rounded-full transition-all duration-300",
+          progress >= layer.threshold ? "bg-accent scale-125" : "bg-border",
+        )}
       />
     ))}
   </div>

@@ -25,7 +25,10 @@ const IMAGE_DEFAULTS: Record<string, { w: number; q: number }> = {
 
 const validateAssetUrl = (url: string) => {
   const parsed = new URL(url);
-  if (parsed.protocol !== "https:" || !ALLOWED_HOSTS.includes(parsed.hostname)) {
+  if (
+    parsed.protocol !== "https:" ||
+    !ALLOWED_HOSTS.includes(parsed.hostname)
+  ) {
     throw new Response("Invalid asset URL", { status: 400 });
   }
 };
@@ -67,7 +70,7 @@ const resolveImageUrl = (
 
 export const loader = async ({ params, context }: LoaderFunctionArgs) => {
   const { type, slug } = params;
-  const env = context.cloudflare.env as Env;
+  const env = context.cloudflare.env;
   const client = new ContentfulClient(
     env.CONTENTFUL_SPACE_ID,
     env.CONTENTFUL_ACCESS_TOKEN,

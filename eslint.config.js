@@ -2,12 +2,17 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 import prettier from "eslint-config-prettier";
 
 export default tseslint.config(
-  { ignores: ["build/", "node_modules/", ".wrangler/"] },
+  { ignores: ["build/", "node_modules/", ".wrangler/", ".claude/"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  // Catches the disclosure/hidden-content mistakes found in the a11y audit
+  // (missing aria-expanded, focusable content inside a collapsed panel) before
+  // they reach a review.
+  jsxA11y.flatConfigs.recommended,
   {
     plugins: {
       "react-hooks": reactHooks,

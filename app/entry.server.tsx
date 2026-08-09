@@ -5,7 +5,7 @@ import { renderToReadableStream } from "react-dom/server";
 
 const ABORT_DELAY = 5_000;
 
-function setSecurityHeaders(headers: Headers) {
+function setSecurityHeaders(headers: Headers, nonce: string) {
   // Prevent clickjacking
   headers.set("X-Frame-Options", "DENY");
 
@@ -26,11 +26,21 @@ function setSecurityHeaders(headers: Headers) {
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+      // Remix emits its hydration payload and ScrollRestoration as inline
+      // <script> tags, which is what required 'unsafe-inline' here — not GA,
+      // which loads by src. Those tags now carry this request's nonce, so the
+      // wildcard can go. 'strict-dynamic' lets the nonced bundle load its own
+      // chunks without every hashed filename needing an entry.
+      `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.google-analytics.com`,
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self'",
-      "img-src 'self' data: https://images.ctfassets.net https://*.ctfassets.net",
-      "connect-src 'self' https://cdn.contentful.com https://www.google-analytics.com https://www.googletagmanager.com",
+      // Contentful is never contacted from the browser: images and the resume
+      // are proxied same-origin through /asset/* and /resume, and the GraphQL
+      // call happens in the Worker, outside the browser's CSP entirely. The
+      // ctfassets and cdn.contentful.com entries (including a subdomain
+      // wildcard) were widening the allowed set for nothing.
+      "img-src 'self' data:",
+      "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -49,19 +59,21 @@ export default async function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   remixContext: EntryContext,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _loadContext: AppLoadContext,
+  loadContext: AppLoadContext,
 ) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), ABORT_DELAY);
+  const { nonce } = loadContext;
 
   const body = await renderToReadableStream(
     <RemixServer
       context={remixContext}
       url={request.url}
       abortDelay={ABORT_DELAY}
+      nonce={nonce}
     />,
     {
+      nonce,
       signal: controller.signal,
       onError(error: unknown) {
         if (!controller.signal.aborted) {
@@ -80,7 +92,7 @@ export default async function handleRequest(
   }
 
   responseHeaders.set("Content-Type", "text/html");
-  setSecurityHeaders(responseHeaders);
+  setSecurityHeaders(responseHeaders, nonce);
 
   return new Response(body, {
     headers: responseHeaders,

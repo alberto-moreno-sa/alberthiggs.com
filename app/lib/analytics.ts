@@ -51,4 +51,7 @@ export const trackSocialClick = (platform: string) =>
   trackEvent("social_click", { category: "outbound", label: platform });
 
 export const trackResumeDownload = () =>
-  trackEvent("resume_download", { category: "engagement", label: "resume_pdf" });
+  trackEvent("resume_download", {
+    category: "engagement",
+    label: "resume_pdf",
+  });

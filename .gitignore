@@ -15,7 +15,11 @@ Thumbs.db
 .env.*
 .dev.vars
 .wrangler
-.claude
+
+# Claude Code — ignore local settings, track shared skills/agents
+.claude/*
+!.claude/skills/
+!.claude/agents/
 
 # Dependencies
 node_modules/

@@ -3,6 +3,9 @@ import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import { useExpandable } from "~/hooks/useExpandable";
 import type { Experience as ExperienceType } from "~/lib/contentful";
 import { slugify } from "~/lib/slugify";
+import { SectionHeader } from "~/components/ui/SectionHeader";
+import { cardClass } from "~/components/ui/cardClass";
+import { cn } from "~/lib/cn";
 
 /**
  * Show just the host in the link label while the href keeps the full path.
@@ -27,16 +30,23 @@ const ExperienceCard = ({
   index: number;
 }) => {
   const { ref, isVisible } = useScrollAnimation(0.15);
-  const { isExpanded, contentRef, contentHeight, triggerProps } =
-    useExpandable(true);
+  const {
+    isExpanded,
+    contentRef,
+    contentHeight,
+    triggerProps,
+    labelId,
+    panelId,
+  } = useExpandable(true);
   const [imgError, setImgError] = useState(false);
 
   return (
     <div
       ref={ref}
-      className={`relative pl-8 md:pl-12 pb-16 last:pb-0 transition-all duration-700 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
+      className={cn(
+        "relative pl-8 md:pl-12 pb-16 last:pb-0 transition-all duration-700",
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+      )}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
       {/* Timeline line */}
@@ -46,14 +56,15 @@ const ExperienceCard = ({
 
       {/* Row: card left, preview right */}
       <div
-        className={`flex flex-col ${
+        className={cn(
+          "flex flex-col",
           experience.imageUrl || experience.website
             ? "md:flex-row md:gap-6 md:items-start"
-            : ""
-        }`}
+            : "",
+        )}
       >
         {/* Card */}
-        <div className="group flex-1 min-w-0 rounded-xl border border-border bg-card/50 hover:border-border-light transition-all duration-300">
+        <div className={cardClass({ className: "group flex-1 min-w-0" })}>
           {/* Clickable header */}
           <div
             {...triggerProps}
@@ -61,7 +72,10 @@ const ExperienceCard = ({
           >
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
               <div>
-                <h3 className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors font-mono">
+                <h3
+                  id={labelId}
+                  className="text-xl font-bold text-text-primary group-hover:text-accent transition-colors font-mono"
+                >
                   {experience.company}
                 </h3>
                 <p className="text-accent/70 font-medium text-sm mt-0.5">
@@ -93,12 +107,16 @@ const ExperienceCard = ({
 
             {/* Expand indicator */}
             <div
-              className={`${isExpanded ? "mt-4" : "mt-3"} flex items-center gap-2 text-accent/70 text-xs`}
+              className={cn(
+                isExpanded ? "mt-4" : "mt-3",
+                "flex items-center gap-2 text-accent/70 text-xs",
+              )}
             >
               <svg
-                className={`expand-chevron w-4 h-4 ${
-                  isExpanded ? "expand-chevron-open" : ""
-                }`}
+                className={cn(
+                  "expand-chevron w-4 h-4",
+                  isExpanded ? "expand-chevron-open" : "",
+                )}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -116,6 +134,7 @@ const ExperienceCard = ({
 
           {/* Expandable content */}
           <div
+            id={panelId}
             className="overflow-hidden transition-[max-height] duration-500 ease-in-out"
             style={{ maxHeight: isExpanded ? contentHeight : 0 }}
             aria-hidden={!isExpanded}
@@ -236,21 +255,11 @@ const ExperienceCard = ({
 };
 
 const Experience = ({ experiences }: { experiences: ExperienceType[] }) => {
-  const { ref, isVisible } = useScrollAnimation();
-
   return (
     <section id="experience" className="relative py-24">
       <div className="relative mx-auto max-w-5xl px-6">
         {/* Section header */}
-        <div
-          ref={ref}
-          className={`mb-12 ${isVisible ? "scroll-visible" : "scroll-hidden"}`}
-        >
-          <span className="section-label">// experience</span>
-          <h2 className="text-3xl sm:text-4xl font-bold font-mono mt-2">
-            Experience
-          </h2>
-        </div>
+        <SectionHeader label="experience" title="Experience" />
 
         {/* Timeline */}
         <div>

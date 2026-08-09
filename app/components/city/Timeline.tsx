@@ -5,7 +5,13 @@
  * plain div rather than an <input type=range> so that the tick marks can show
  * which stations exist without fighting the native control's styling.
  */
-import { useCallback, useEffect, useRef, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { cityStore, usePlaying, useStation } from "./cityStore";
 import { COLORS } from "./palette";
 
@@ -30,8 +36,13 @@ const bar: CSSProperties = {
 };
 
 const button: CSSProperties = {
-  width: 28,
-  height: 24,
+  // WCAG 2.5.8 sets a 24x24 floor; 28x24 met it with no margin for zoom or
+  // cross-browser rounding, so give it a comfortable touch target instead.
+  width: 44,
+  height: 44,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   border: `1px solid ${COLORS.panelBorder}`,
   borderRadius: 5,
   background: "transparent",
@@ -44,6 +55,7 @@ export function Timeline({ count }: { count: number }) {
   const station = useStation();
   const playing = usePlaying();
   const trackRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
 
   const seekFromEvent = useCallback(
@@ -72,7 +84,24 @@ export function Timeline({ count }: { count: number }) {
     };
   }, [seekFromEvent]);
 
+  // These are window-level shortcuts, so they must stop applying once the
+  // viewer scrolls away — otherwise Space stops scrolling the page anywhere
+  // below the viewer for the rest of the visit (WCAG 2.1.1 / 2.1.4).
+  const [inView, setInView] = useState(false);
   useEffect(() => {
+    const el = barRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inView) return;
+
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
@@ -87,12 +116,12 @@ export function Timeline({ count }: { count: number }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [count]);
+  }, [count, inView]);
 
   const pct = count > 1 ? (station / (count - 1)) * 100 : 0;
 
   return (
-    <div style={bar}>
+    <div ref={barRef} style={bar}>
       <button
         type="button"
         style={button}

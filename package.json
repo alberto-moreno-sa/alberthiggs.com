@@ -19,9 +19,11 @@
     "@remix-run/cloudflare": "^2.16.0",
     "@remix-run/cloudflare-pages": "^2.16.0",
     "@remix-run/react": "^2.16.0",
+    "clsx": "^2.1.1",
     "isbot": "^5.1.17",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.6.0",
     "three": "^0.157.0"
   },
   "devDependencies": {
@@ -34,6 +36,7 @@
     "@types/three": "^0.157.2",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.0",
     "prettier": "^3.8.1",

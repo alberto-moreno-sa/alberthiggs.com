@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { trackNavClick, trackResumeDownload } from "~/lib/analytics";
+import { cn } from "~/lib/cn";
 
 const navLinks = [
   { label: "About", href: "#about", num: "01" },
@@ -9,8 +10,11 @@ const navLinks = [
   { label: "Reforma", href: "#reforma", num: "05" },
   { label: "Taco", href: "#taco", num: "06" },
   { label: "Testimonials", href: "#testimonials", num: "07" },
-  { label: "Contact", href: "#contact", num: "08" }
+  { label: "Contact", href: "#contact", num: "08" },
 ];
+
+/** Static — derived once at module load, not on every scroll event. */
+const sectionIds = navLinks.map((l) => l.href.replace("#", ""));
 
 const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
   e.preventDefault();
@@ -21,32 +25,46 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
-    const handleScroll = () => {
+    // Batch the layout reads into one rAF per frame — the raw scroll event can
+    // fire far more often than that, and each pass calls getBoundingClientRect
+    // on up to 8 sections. Same pattern as useScrollProgress.
+    const update = () => {
       setScrolled(window.scrollY > 50);
 
-      const sections = navLinks.map((l) => l.href.replace("#", ""));
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i]);
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionIds[i]);
         if (el && el.getBoundingClientRect().top <= 120) {
-          setActiveSection(sections[i]);
+          setActiveSection(sectionIds[i]);
           break;
         }
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update(); // initial check
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
           ? "glass border-b border-border/50 shadow-lg shadow-black/20"
-          : "bg-transparent"
-      }`}
+          : "bg-transparent",
+      )}
     >
       <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
         <a
@@ -74,13 +92,14 @@ const Navbar = () => {
                   scrollTo(e, sectionId);
                   trackNavClick(link.label.toLowerCase());
                 }}
-                className={`nav-link relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                className={cn(
+                  "nav-link relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                   activeSection === sectionId
                     ? "text-accent nav-link-active"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
+                    : "text-text-secondary hover:text-text-primary",
+                )}
               >
-                <span className="font-mono text-[10px] text-accent/40 mr-1">
+                <span className="font-mono text-[10px] text-accent/60 mr-1">
                   {link.num}.
                 </span>
                 {link.label}
@@ -103,30 +122,39 @@ const Navbar = () => {
           onClick={() => setMobileOpen(!mobileOpen)}
           className="md:hidden flex flex-col gap-1.5 p-2"
           aria-label="Toggle menu"
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-menu"
         >
           <span
-            className={`w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center ${
-              mobileOpen ? "rotate-45 translate-y-[4px]" : ""
-            }`}
+            className={cn(
+              "w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center",
+              mobileOpen ? "rotate-45 translate-y-[4px]" : "",
+            )}
           />
           <span
-            className={`w-5 h-0.5 bg-text-primary transition-all duration-300 ${
-              mobileOpen ? "opacity-0" : ""
-            }`}
+            className={cn(
+              "w-5 h-0.5 bg-text-primary transition-all duration-300",
+              mobileOpen ? "opacity-0" : "",
+            )}
           />
           <span
-            className={`w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center ${
-              mobileOpen ? "-rotate-45 -translate-y-[4px]" : ""
-            }`}
+            className={cn(
+              "w-5 h-0.5 bg-text-primary transition-all duration-300 origin-center",
+              mobileOpen ? "-rotate-45 -translate-y-[4px]" : "",
+            )}
           />
         </button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — collapsed with max-height rather than unmounted, so the
+          links inside must be taken out of the tab order explicitly. */}
       <div
-        className={`md:hidden glass border-b border-border/50 overflow-hidden transition-all duration-300 ${
-          mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
+        id="mobile-menu"
+        aria-hidden={!mobileOpen}
+        className={cn(
+          "md:hidden glass border-b border-border/50 overflow-hidden transition-all duration-300",
+          mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
+        )}
       >
         <div className="px-6 py-4 flex flex-col gap-2">
           {navLinks.map((link) => {
@@ -135,18 +163,20 @@ const Navbar = () => {
               <a
                 key={link.href}
                 href={link.href}
+                tabIndex={mobileOpen ? 0 : -1}
                 onClick={(e) => {
                   scrollTo(e, sectionId);
                   setMobileOpen(false);
                   trackNavClick(link.label.toLowerCase());
                 }}
-                className={`nav-link relative px-4 py-3 text-sm font-medium rounded-lg transition-all ${
+                className={cn(
+                  "nav-link relative px-4 py-3 text-sm font-medium rounded-lg transition-all",
                   activeSection === sectionId
                     ? "text-accent nav-link-active"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
+                    : "text-text-secondary hover:text-text-primary",
+                )}
               >
-                <span className="font-mono text-[10px] text-accent/40 mr-2">
+                <span className="font-mono text-[10px] text-accent/60 mr-2">
                   {link.num}.
                 </span>
                 {link.label}
@@ -157,6 +187,7 @@ const Navbar = () => {
             href="/resume"
             target="_blank"
             rel="noopener noreferrer"
+            tabIndex={mobileOpen ? 0 : -1}
             onClick={() => {
               setMobileOpen(false);
               trackResumeDownload();

@@ -24,8 +24,14 @@ export const links: LinksFunction = () => rootLinks;
 export const meta: MetaFunction = () => rootMeta;
 
 export function loader({ context }: LoaderFunctionArgs) {
-  const env = context.cloudflare.env as Env;
-  return json({ gaTrackingId: env.GA_MEASUREMENT_ID ?? "" });
+  const env = context.cloudflare.env;
+  // The nonce is minted per request in getLoadContext and travels to the
+  // component tree through here, so <Scripts> and <ScrollRestoration> can stamp
+  // it on the inline tags they emit.
+  return json({
+    gaTrackingId: env.GA_MEASUREMENT_ID ?? "",
+    nonce: context.nonce,
+  });
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -40,10 +46,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-bg text-text-primary antialiased">
+        {/* WCAG 2.4.1 — without this, reaching the content by keyboard means
+            tabbing past 8 nav links and the menu button on every page. */}
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
         {children}
         <GoogleAnalytics gaTrackingId={data?.gaTrackingId} />
-        <ScrollRestoration />
-        <Scripts />
+        <ScrollRestoration nonce={data?.nonce} />
+        <Scripts nonce={data?.nonce} />
       </body>
     </html>
   );

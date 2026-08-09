@@ -4,7 +4,7 @@ export const useScrollProgress = (): {
   ref: React.RefObject<HTMLDivElement>;
   progress: number;
 } => {
-  const ref = useRef<HTMLDivElement>(null!);
+  const ref = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const rafRef = useRef<number>(0);
 

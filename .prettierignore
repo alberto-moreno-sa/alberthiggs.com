@@ -2,3 +2,6 @@ build/
 node_modules/
 .wrangler/
 package-lock.json
+
+# Vendored Claude Code skills/agents — upstream files, not ours to format
+.claude/
