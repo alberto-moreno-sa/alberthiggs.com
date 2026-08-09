@@ -1,0 +1,19 @@
+# Cloudflare Workers Static Assets picks this up from the assets directory.
+# Without it everything is served `public, max-age=0, must-revalidate`, so even
+# content-hashed chunks revalidate on every visit.
+
+# Build output — the filename contains a content hash, so it can never go stale.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Pre-built city tiles for the 3D viewer: ~97 files, ~3.9 MB, streamed one by
+# one while the camera flies. Revalidating each one mid-flight is exactly the
+# latency this cache is meant to remove. They only change when the tiles are
+# regenerated, which is a deliberate rebuild.
+/data/city/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Fonts are self-hosted and versioned by content, not by filename — a year is
+# still safe because replacing one means replacing the file.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable

@@ -39,6 +39,14 @@ export const rootLinks = [
 ];
 
 export const rootMeta = [
+  // Under Remix these two were literal JSX in root.tsx's <head>. TanStack Start
+  // builds the head from this array instead and injects neither for you, so
+  // they have to be declared here. Without the viewport tag mobile browsers lay
+  // the page out on a ~980px virtual viewport and pan-and-zoom it instead of
+  // reflowing (WCAG 1.4.10). charSet has to land in the first 1024 bytes, hence
+  // first in the list.
+  { charSet: "utf-8" },
+  { name: "viewport", content: "width=device-width, initial-scale=1" },
   { title: siteConfig.title },
   { name: "description", content: siteConfig.description },
   { name: "theme-color", content: siteConfig.themeColor },

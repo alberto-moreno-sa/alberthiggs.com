@@ -1,17 +1,17 @@
-import {
-  cloudflareDevProxyVitePlugin as remixCloudflareDevProxy,
-  vitePlugin as remix,
-} from "@remix-run/dev";
 import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { cloudflare } from "@cloudflare/vite-plugin";
+import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { getLoadContext } from "./load-context";
 
 export default defineConfig({
+  resolve: { tsconfigPaths: true },
   plugins: [
-    remixCloudflareDevProxy({ getLoadContext }),
+    // Order matters: the Cloudflare environment has to exist before Start
+    // builds against it.
+    cloudflare({ viteEnvironment: { name: "ssr" } }),
     tailwindcss(),
-    remix(),
-    tsconfigPaths(),
+    tanstackStart(),
+    viteReact(),
   ],
 });

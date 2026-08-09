@@ -3,7 +3,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 interface ExpandableReturn {
   isExpanded: boolean;
   toggle: () => void;
-  contentRef: React.RefObject<HTMLDivElement>;
+  contentRef: React.RefObject<HTMLDivElement | null>;
   contentHeight: number;
   /** Put on the element that names the control — usually the card's heading. */
   labelId: string;
@@ -23,9 +23,10 @@ interface ExpandableReturn {
 export const useExpandable = (defaultExpanded = false): ExpandableReturn => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [contentHeight, setContentHeight] = useState(0);
-  // `useRef<T>(null)` — not the `useRef<T>(null!)` this used to be. React 18's
-  // overload already gives RefObject<T> with a nullable `.current`, so the
-  // non-null assertion bought nothing and only hid the real initial state.
+  // React 19 types useRef<T>(null) as RefObject<T | null>, which is the truth:
+  // the ref really is null until mount. Under React 18 this file used
+  // useRef<T>(null!) to paper over that; the assertion is gone and the return
+  // type now says what actually happens.
   const contentRef = useRef<HTMLDivElement>(null);
 
   const id = useId();

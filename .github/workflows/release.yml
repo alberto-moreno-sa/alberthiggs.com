@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - run: npm ci
@@ -67,14 +67,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - run: npm ci
       - run: npm run build
 
+      # Workers, not Pages: TanStack Start's Cloudflare adapter builds a Worker
+      # (dist/server) that serves dist/client as its static assets, so this is
+      # `wrangler deploy` against wrangler.jsonc rather than `pages deploy`.
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./build/client --project-name=alberthiggs-com
+          command: deploy
