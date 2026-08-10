@@ -70,8 +70,12 @@ export default {
     const nonce = crypto.randomUUID();
 
     // The nonce is rewritten on the way out, so the cached copy is
-    // nonce-agnostic and the URL alone is a sound key.
-    const cacheKey = new Request(request.url, { method: "GET" });
+    // nonce-agnostic. The build id is in the key so a deploy invalidates
+    // everything it rendered — without it, shipping a fix left the previous
+    // HTML being served for the rest of its hour.
+    const keyUrl = new URL(request.url);
+    keyUrl.searchParams.set("__b", __BUILD_ID__);
+    const cacheKey = new Request(keyUrl.toString(), { method: "GET" });
     const cached =
       request.method === "GET" ? await edgeCache.match(cacheKey) : undefined;
 
