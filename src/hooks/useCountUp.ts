@@ -6,7 +6,9 @@ export const useCountUp = (
   options?: { duration?: number },
 ): number => {
   const duration = options?.duration ?? 2000;
-  const [value, setValue] = useState(0);
+  // Start at the target so SSR and no-JS clients render the real number.
+  // The animation resets to 0 on the client only when it is about to run.
+  const [value, setValue] = useState(target);
   const rafRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
   const hasRunRef = useRef(false);
@@ -22,6 +24,7 @@ export const useCountUp = (
       return;
     }
 
+    setValue(0);
     startTimeRef.current = performance.now();
 
     const animate = (now: number) => {

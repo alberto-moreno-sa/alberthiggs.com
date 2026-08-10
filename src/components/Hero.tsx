@@ -20,9 +20,7 @@ const AnimatedStat = ({
   return (
     <div className="text-center" style={{ animationDelay: `${index * 0.1}s` }}>
       <div className="text-2xl sm:text-3xl font-bold text-accent font-mono mb-1">
-        {target > 0
-          ? `${displayValue}${isVisible && displayValue >= target ? suffix : ""}`
-          : stat.value}
+        {target > 0 ? `${displayValue}${suffix}` : stat.value}
       </div>
       <div className="text-[10px] sm:text-xs text-text-muted font-mono uppercase tracking-wider">
         {stat.label}
