@@ -3,6 +3,21 @@ import { trackCtaClick } from "~/lib/analytics";
 import { useScrollAnimation } from "~/hooks/useScrollAnimation";
 import { useCountUp } from "~/hooks/useCountUp";
 
+/**
+ * A hero stat, as the CMS actually provides it.
+ *
+ * `value` is free text typed into Contentful, so it is parsed rather than
+ * trusted: "13+" counts to 13 and keeps the "+", "2M+" counts to 2 and keeps
+ * "M+". Anything without a leading number — an empty field, or the "M+" this
+ * field was briefly left as — is rendered verbatim and simply does not animate,
+ * which is the honest fallback for a value we cannot interpret.
+ */
+const parseStatValue = (value: string) => {
+  const match = value.trim().match(/^(\d+)(.*)$/);
+  if (!match) return { target: 0, suffix: "", literal: value.trim() };
+  return { target: parseInt(match[1], 10), suffix: match[2], literal: null };
+};
+
 const AnimatedStat = ({
   stat,
   index,
@@ -12,19 +27,22 @@ const AnimatedStat = ({
   index: number;
   isVisible: boolean;
 }) => {
-  const match = stat.value.match(/^(\d+)(.*)$/);
-  const target = match ? parseInt(match[1], 10) : 0;
-  const suffix = match ? match[2] : stat.value;
+  const { target, suffix, literal } = parseStatValue(stat.value);
   const displayValue = useCountUp(target, isVisible, { duration: 2000 });
 
   return (
-    <div className="text-center" style={{ animationDelay: `${index * 0.1}s` }}>
-      <div className="text-2xl sm:text-3xl font-bold text-accent font-mono mb-1">
-        {target > 0 ? `${displayValue}${suffix}` : stat.value}
-      </div>
-      <div className="text-[10px] sm:text-xs text-text-muted font-mono uppercase tracking-wider">
+    <div
+      className="px-3 text-center sm:px-6"
+      style={{ animationDelay: `${index * 0.1}s` }}
+    >
+      <dt className="text-2xl sm:text-3xl font-bold text-accent font-mono mb-1">
+        {literal ?? `${displayValue}${suffix}`}
+      </dt>
+      {/* `text-balance` keeps a long label like "Years Building Software" from
+          breaking into a one-word orphan line. */}
+      <dd className="text-[10px] sm:text-xs text-text-muted font-mono uppercase tracking-wider text-balance">
         {stat.label}
-      </div>
+      </dd>
     </div>
   );
 };
@@ -32,7 +50,16 @@ const AnimatedStat = ({
 const Hero = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
   const [firstName, ...rest] = personalInfo.name.split(" ");
   const lastName = rest.join(" ");
-  const { ref: statsRef, isVisible: statsVisible } = useScrollAnimation(0.3);
+  const { ref: statsRef, isVisible: statsVisible } =
+    useScrollAnimation<HTMLDListElement>(0.3);
+
+  // heroStats is hand-authored JSON in the CMS. The data boundary guarantees
+  // it is an array, but not that every entry is usable, so drop the ones that
+  // would render as a blank column and cap the row at four — past that the
+  // columns get too narrow to read on a phone.
+  const stats = personalInfo.heroStats
+    .filter((s) => s?.value?.trim() && s?.label?.trim())
+    .slice(0, 4);
   return (
     <section
       id="hero"
@@ -172,32 +199,41 @@ const Hero = ({ personalInfo }: { personalInfo: PersonalInfo }) => {
           </div>
         </div>
 
-        {/* Stats */}
-        <div
-          className="animate-fade-in-up"
-          style={{ animationDelay: "0.55s", animationFillMode: "both" }}
-        >
+        {/* Stats — omitted entirely when the CMS has none, rather than leaving
+            an empty block and its top margin behind. */}
+        {stats.length > 0 && (
           <div
-            ref={statsRef}
-            className="mt-20 flex items-center justify-center gap-8 sm:gap-16"
+            className="animate-fade-in-up"
+            style={{ animationDelay: "0.55s", animationFillMode: "both" }}
           >
-            {personalInfo.heroStats.map((stat, index) => (
-              <div
-                key={stat.label}
-                className="flex items-center gap-8 sm:gap-16"
-              >
-                {index > 0 && (
-                  <div className="w-px h-10 bg-border -ml-8 sm:-ml-16" />
-                )}
+            {/*
+              Equal-width columns with the divider as a left border.
+              This was a flex row whose items sized to their own text, plus a
+              separator pulled into place with a negative margin that cancelled
+              the parent gap. It held while every label was one short word;
+              renaming one to "Years Building Software" made that column far
+              wider than the others and pushed the dividers off true. A grid
+              gives each stat the same width whatever the label says, and the
+              border sits exactly on the boundary with no margin arithmetic.
+            */}
+            <dl
+              ref={statsRef}
+              className="mt-20 mx-auto grid max-w-xl divide-x divide-border"
+              style={{
+                gridTemplateColumns: `repeat(${stats.length}, minmax(0, 1fr))`,
+              }}
+            >
+              {stats.map((stat, index) => (
                 <AnimatedStat
+                  key={stat.label}
                   stat={stat}
                   index={index}
                   isVisible={statsVisible}
                 />
-              </div>
-            ))}
+              ))}
+            </dl>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Scroll indicator */}
