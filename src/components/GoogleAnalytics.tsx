@@ -47,10 +47,16 @@ export const GoogleAnalytics = ({
     }
   }, [safeId, loaded]);
 
-  // Track page views on navigation
+  // Track page views on navigation.
+  //
+  // `location.href` — not `pathname + search`. Under Remix, `search` was the
+  // raw query string; TanStack Router parses it into an object, so
+  // concatenating threw "Cannot convert object to primitive value" at render.
+  // TypeScript allows `string + object`, so only the browser caught it.
+  // `href` is documented as pathname + search + hash, which is what GA wants.
   useEffect(() => {
     if (safeId && loaded) {
-      trackPageView(safeId, location.pathname + location.search);
+      trackPageView(safeId, location.href);
     }
   }, [safeId, loaded, location]);
 
