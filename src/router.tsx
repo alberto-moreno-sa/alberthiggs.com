@@ -1,11 +1,11 @@
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import { takeNonce } from "./start";
 
 export function getRouter() {
-  // Minted by the request middleware (src/start.ts) so the value stamped on
-  // the inline hydration script is the same one already in the CSP header.
-  const nonce = takeNonce();
+  // A placeholder. src/server.ts rewrites every nonce attribute on the way out
+  // and sets the CSP header to match, so the value used at render time never
+  // reaches the browser — which is what lets the rendered HTML be cached.
+  const nonce = crypto.randomUUID();
 
   return createTanStackRouter({
     routeTree,
