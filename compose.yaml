@@ -1,0 +1,50 @@
+# Two ways to run the site locally. Both read secrets from .dev.vars, which
+# stays on the host and is never copied into the image.
+#
+#   docker compose up dev       → Vite dev server, HMR, http://localhost:3000
+#   docker compose up preview   → production build on the real Workers runtime,
+#                                 http://localhost:4173
+#
+# Use `dev` while writing components. Use `preview` to check anything that only
+# exists in the Worker: the CSP nonce, the security headers, the HTML edge
+# cache, and the /asset, /resume and sitemap server routes. `dev` does not
+# exercise src/server.ts at all.
+
+services:
+  dev:
+    build: .
+    command: npm run dev -- --host 0.0.0.0 --port 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      # Keep node_modules inside the container. Without this the host directory
+      # shadows it, which both slows startup badly on macOS and can substitute
+      # host-built native binaries for the Linux ones the image installed.
+      - node_modules:/app/node_modules
+      # Build output is per-environment; sharing it with the host invites
+      # confusing mismatches between a host build and a container build.
+      - dist:/app/dist
+    env_file:
+      - .dev.vars
+    environment:
+      # Bind-mounted filesystems on macOS do not deliver inotify events
+      # reliably, so the watcher has to poll to see edits.
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+
+  preview:
+    build: .
+    command: sh -c "npm run build && npm run preview -- --host 0.0.0.0 --port 4173"
+    ports:
+      - "4173:4173"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - dist:/app/dist
+    env_file:
+      - .dev.vars
+
+volumes:
+  node_modules:
+  dist:

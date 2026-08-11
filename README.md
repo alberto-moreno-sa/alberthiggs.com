@@ -118,6 +118,25 @@ npm run dev
 
 The site will be available at `http://localhost:5173`.
 
+### Running in Docker
+
+Optional, and mostly worth it to avoid needing the right Node on your PATH —
+wrangler 4 refuses to start on Node 20, which is easy to trip over when nvm has
+not been sourced in the current shell.
+
+```bash
+docker compose up dev       # Vite dev server with HMR — http://localhost:3000
+docker compose up preview   # production build on the Workers runtime — http://localhost:4173
+```
+
+Both read secrets from `.dev.vars`, which stays on the host and is never copied
+into the image.
+
+Use `dev` while writing components. Use `preview` for anything that only exists
+in the Worker — the CSP nonce, the security headers, the HTML edge cache, and
+the `/asset`, `/resume` and sitemap server routes. `dev` does not run
+`src/server.ts` at all, so none of that is exercised there.
+
 ### Available Scripts
 
 | Command                | Description                                   |

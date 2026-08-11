@@ -1,0 +1,16 @@
+# Keep the build context small and free of anything host-specific.
+node_modules
+dist
+.wrangler
+.git
+.github
+.claude
+
+# Secrets reach the container through env_file at runtime, never baked into a
+# layer where they would persist in the image history.
+.dev.vars
+.env
+.env.*
+
+.DS_Store
+*.log
